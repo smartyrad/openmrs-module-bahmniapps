@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Diagnosis DisplayControl', function () {
-    var rootScope, scope, compiledElementScope, q, _diagnosisService,
+    var rootScope, scope, compiledElementScope, q, _diagnosisService, _appService, _appConfig, _stateParams,
         compile, diagnosis,
         mockBackend,
         element,
@@ -22,8 +22,13 @@ describe('Diagnosis DisplayControl', function () {
         _spinner.then.and.callThrough({data: {}});
         $provide.value('spinner', _spinner);
 
-        _diagnosisService = jasmine.createSpyObj('diagnosisService', ['getDiagnoses']);
-        var getDiagnosesPromise = specUtil.createServicePromise('getDiagnoses');
+        _appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
+        _appConfig = jasmine.createSpyObj('appConfig', ['getConfigValue']);
+
+        _appService.getAppDescriptor.and.returnValue(_appConfig);
+
+        _diagnosisService = jasmine.createSpyObj('diagnosisService', ['getDiagnosis']);
+        var getDiagnosesPromise = specUtil.createServicePromise('getDiagnosis');
         getDiagnosesPromise.success = function (successFn) {
             successFn([{
                     "order": "SECONDARY",
@@ -44,8 +49,15 @@ describe('Diagnosis DisplayControl', function () {
             return getDiagnosesPromise;
 
         };
-        _diagnosisService.getDiagnoses.and.returnValue(getDiagnosesPromise);
+        _diagnosisService.getDiagnosis.and.returnValue(getDiagnosesPromise);
+
+        _stateParams = {
+            dateEnrolled: "startDate",
+            dateCompleted: "endDate"
+        };
         $provide.value('diagnosisService', _diagnosisService);
+        $provide.value('appService', _appService);
+        $provide.value('$stateParams', _stateParams);
     }));
 
 
@@ -63,7 +75,6 @@ describe('Diagnosis DisplayControl', function () {
         scope.section = {
             title: "Diagnosis"
         };
-
         element = compile(directiveHtml)(scope);
         scope.$digest();
         mockBackend.flush();
@@ -79,6 +90,7 @@ describe('Diagnosis DisplayControl', function () {
     }
 
     it('should check diagnosis date toggle', function () {
+        _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: false});
         init();
         compiledElementScope.toggle(diagnosis, true);
 
@@ -92,16 +104,31 @@ describe('Diagnosis DisplayControl', function () {
     });
 
     it('should filter all ruled out diagnoses when showRuledOutDiagnoses flag is false', function () {
+        _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: false});
         init();
         expect(compiledElementScope.allDiagnoses.length).toBe(0);
     });
 
     it('should filter all ruled out diagnoses when showRuledOutDiagnoses flag is true', function () {
+        _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: false});
         directiveHtml = '<bahmni-diagnosis patient-uuid="patient.uuid" config="section" show-ruled-out-diagnoses="undefined"></bahmni-diagnosis>';
 
         init();
         expect(compiledElementScope.allDiagnoses.length).toBe(1);
     });
 
+    it('should get diagnosis within the date range when config is enabled', function(){
+        _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: true});
+        directiveHtml = '<bahmni-diagnosis patient-uuid="\'patientUuid\'" config="section" show-ruled-out-diagnoses="undefined"></bahmni-diagnosis>';
+        init();
+        expect(_diagnosisService.getDiagnosis).toHaveBeenCalledWith("patientUuid", undefined, _stateParams.dateEnrolled, _stateParams.dateCompleted);
+    });
+
+    it('should get all diagnosis when config is disabled', function(){
+        _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: false});
+        directiveHtml = '<bahmni-diagnosis patient-uuid="\'patientUuid\'" config="section" show-ruled-out-diagnoses="undefined"></bahmni-diagnosis>';
+        init();
+        expect(_diagnosisService.getDiagnosis).toHaveBeenCalledWith("patientUuid", undefined, null, null);
+    });
 
 });
