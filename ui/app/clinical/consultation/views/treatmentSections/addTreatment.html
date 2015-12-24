@@ -1,15 +1,19 @@
-<section class="edit-drug-order primary-section-grid clearfix">
-    <form name="addForm" ng-class="{ 'show-invalid': formInvalid}"  ng-submit="add()" bm-form>
-        <div class="drug-options-wrapper clearfix">
-
-            <input id="drug-name" class="fl drug-name" type="text" placeholder="Drug Name" bahmni-autocomplete focus-on="startNewDrugEntry"
-                   source="getDrugs" response-map="getDataResults" ng-required="!treatment.drugNameDisplay"
-                   ng-class="{
+<form name="addForm" ng-class="{ 'show-invalid': formInvalid}"  ng-submit="add()" bm-form>
+<section class="clearfix">
+    <div class="" ng-if="defaultDrugs.length > 0">
+        <h3>{{ ::'MEDICATION_DEFAULT_DRUGS_TITLE' | translate}}</h3>
+        <input type="button" value="{{defaultDrug.drug.name}}" ng-repeat="defaultDrug in defaultDrugs" ng-click="dummy(defaultDrug)"/>
+    </div>
+    <div>
+        <h3>{{ ::'MEDICATION_DRUG_NAME_TITLE' | translate}}</h3>
+        <input id="drug-name" class="fl drug-name" type="text" placeholder="Drug Name" bahmni-autocomplete focus-on="startNewDrugEntry"
+               source="getDrugs" response-map="getDataResults" ng-required="!treatment.drugNameDisplay"
+               ng-class="{
                         active: treatment.isNonCodedDrug
                    }"
-                   ng-change="onChange()"
-                   ng-model="treatment.drugNameDisplay" on-select="onSelect" autofocus
-                   ng-disabled="treatment.previousOrderUuid" ng-readonly="treatment.isBeingEdited"/>
+               ng-change="onChange()"
+               ng-model="treatment.drugNameDisplay" on-select="onSelect" autofocus
+               ng-disabled="treatment.previousOrderUuid" ng-readonly="treatment.isBeingEdited"/>
 
             <span ng-if="!allowOnlyCodedDrugs">
                 <button type="button" ng-model="treatment.isNonCodedDrug"
@@ -22,6 +26,11 @@
                         ng-disabled="treatment.drug.uuid || (treatment.isBeingEdited && treatment.isNonCodedDrug)"><span>Accept</span>
                 </button>
             </span>
+    </div>
+</section>
+
+<section class="edit-drug-order primary-section-grid clearfix" style="margin-top:20px">
+        <div class="drug-options-wrapper clearfix">
             <button type="button" class="icon-button exchange-btn fl" tabindex="-1" ng-click="treatment.toggleFrequency()">
                 <i class="fa fa-exchange"></i>
             </button>
@@ -104,6 +113,6 @@
         <div class="drug-options-wrapper" ng-if="treatmentActionLinks.length > 0">
             <button ng-repeat="extension in treatmentActionLinks" type="button" class="form-field secondary-button" ng-click="openActionLink(extension)" accesskey="{{extension.shortcutKey}}" ng-bind-html="extension.label"></button>
         </div>
-    </form>
 </section>
+</form>
 <ng-include src="'consultation/views/treatmentSections/newDrugOrders.html'"></ng-include>

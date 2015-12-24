@@ -9,6 +9,10 @@ angular.module('bahmni.clinical')
 
             var DateUtil = Bahmni.Common.Util.DateUtil;
 
+            drugService.getSetMembersOfConcept("All TB Drugs").then(function(result) {
+                 $scope.defaultDrugs = result.map(constructDrugNameDisplay);
+            });
+
             $scope.treatments = $scope.consultation.newlyAddedTreatments || [];
             $scope.treatmentConfig = treatmentConfig;
             $scope.treatmentActionLinks = clinicalAppConfigService.getTreatmentActionLink();
@@ -292,7 +296,8 @@ angular.module('bahmni.clinical')
             };
 
             var constructDrugNameDisplay = function (drug) {
-                var drugSearchResult = new Bahmni.Clinical.DrugSearchResult(drug, $scope.treatment.drugNameDisplay);
+                console.log('$scope.treatment.drugNameDisplay',$scope.treatment.drugNameDisplay)
+                var drugSearchResult = new Bahmni.Clinical.DrugSearchResult(drug,  $scope.treatment.drugNameDisplay);
                 return {
                     label: drugSearchResult.getLabel(),
                     value: drugSearchResult.getValue(),
@@ -304,14 +309,23 @@ angular.module('bahmni.clinical')
                 return data.map(constructDrugNameDisplay);
             };
             $scope.onSelect =  function(item){
+                console.log("select triggered with" + JSON.stringify(item))
                 $scope.treatment.selectedItem = item;
             };
+
+            $scope.dummy = function(item) {
+                $scope.onSelect(item);
+                $scope.treatment.drugNameDisplay = item.value;
+                $scope.onChange();
+            };
+
             $scope.onAccept = function(){
                 $scope.treatment.acceptedItem=$scope.treatment.drugNameDisplay;
                 $scope.onChange();
             };
 
             $scope.onChange = function (){
+                console.log("change triggered with" + JSON.stringify($scope.treatment.selectedItem))
                 if($scope.treatment.selectedItem){
                     $scope.treatment.isNonCodedDrug = false;
                     delete  $scope.treatment.drugNonCoded;

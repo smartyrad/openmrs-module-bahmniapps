@@ -6,7 +6,9 @@ describe("TreatmentController", function () {
     beforeEach(module('bahmni.clinical'));
 
     var DateUtil = Bahmni.Common.Util.DateUtil;
-    var scope, rootScope, contextChangeHandler, newTreatment, editTreatment, clinicalAppConfigService, ngDialog, encounterDateTime, appService, appConfig;
+    var scope, rootScope, contextChangeHandler, newTreatment,
+        editTreatment, clinicalAppConfigService, ngDialog,
+        encounterDateTime, appService, appConfig, drugService, defaultDrugs;
     beforeEach(inject(function ($controller, $rootScope) {
         scope = $rootScope.$new();
         rootScope = $rootScope;
@@ -29,6 +31,15 @@ describe("TreatmentController", function () {
 
         appService.getAppDescriptor.and.returnValue(appConfig);
 
+        drugService = jasmine.createSpyObj('drugService', ['getSetMembersOfConcept']);
+        defaultDrugs = [
+            {name: "T", dosageForm: {display: "something"}, uuid: "123-12321"},
+            {name: "A", dosageForm: {display: "something"}, uuid: "123-12321"},
+            {name: "P", dosageForm: {display: "something"}, uuid: "123-12321"},
+        ];
+        drugService.getSetMembersOfConcept.and.returnValue(defaultDrugs);
+
+
         $controller('TreatmentController', {
             $scope: scope,
             $rootScope: rootScope,
@@ -37,6 +48,7 @@ describe("TreatmentController", function () {
             clinicalAppConfigService: clinicalAppConfigService,
             ngDialog: ngDialog,
             appService: appService,
+            DrugService: drugService,
             treatmentConfig: {
                 durationUnits: [
                     {name: "Day(s)", factor: 1},
@@ -46,7 +58,12 @@ describe("TreatmentController", function () {
         });
     }));
 
+    describe("initialization", function() {
+        iit("calls drugService to find all default drugs", function() {
+            expect(scope.defaultDrugs.length).toBe(defaultDrugs.length);
 
+        });
+    });
 
     describe("add treatment()", function(){
         it("should save as a free text drug order on click of accept button", function(){
