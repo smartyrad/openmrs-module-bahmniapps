@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Diagnosis DisplayControl', function () {
-    var rootScope, scope, compiledElementScope, q, _diagnosisService, _appService, _appConfig, _stateParams,
+    var rootScope, scope, compiledElementScope, q, _diagnosisService, _appService, _appConfig,
         compile, diagnosis,
         mockBackend,
         element,
@@ -51,13 +51,8 @@ describe('Diagnosis DisplayControl', function () {
         };
         _diagnosisService.getDiagnosis.and.returnValue(getDiagnosesPromise);
 
-        _stateParams = {
-            dateEnrolled: "startDate",
-            dateCompleted: "endDate"
-        };
         $provide.value('diagnosisService', _diagnosisService);
         $provide.value('appService', _appService);
-        $provide.value('$stateParams', _stateParams);
     }));
 
 
@@ -73,7 +68,9 @@ describe('Diagnosis DisplayControl', function () {
         scope = rootScope.$new();
         mockBackend.expectGET('../common/displaycontrols/diagnosis/views/diagnosisDisplayControl.html').respond("<div>dummy</div>");
         scope.section = {
-            title: "Diagnosis"
+            title: "Diagnosis",
+            dateEnrolled: "startDate",
+            dateCompleted: "endDate"
         };
         element = compile(directiveHtml)(scope);
         scope.$digest();
@@ -121,7 +118,7 @@ describe('Diagnosis DisplayControl', function () {
         _appConfig.getConfigValue.and.returnValue({showDashBoardWithinDateRange: true});
         directiveHtml = '<bahmni-diagnosis patient-uuid="\'patientUuid\'" config="section" show-ruled-out-diagnoses="undefined"></bahmni-diagnosis>';
         init();
-        expect(_diagnosisService.getDiagnosis).toHaveBeenCalledWith("patientUuid", undefined, _stateParams.dateEnrolled, _stateParams.dateCompleted);
+        expect(_diagnosisService.getDiagnosis).toHaveBeenCalledWith("patientUuid", undefined, scope.section.dateEnrolled, scope.section.dateCompleted);
     });
 
     it('should get all diagnosis when config is disabled', function(){

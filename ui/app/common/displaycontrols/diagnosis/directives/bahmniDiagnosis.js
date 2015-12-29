@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('bahmni.common.displaycontrol.diagnosis')
-    .directive('bahmniDiagnosis', ['diagnosisService', '$q', 'spinner', '$rootScope', 'appService', '$stateParams',
-        function (diagnosisService, $q, spinner, $rootScope, appService, $stateParams) {
+    .directive('bahmniDiagnosis', ['diagnosisService', '$q', 'spinner', '$rootScope', 'appService',
+        function (diagnosisService, $q, spinner, $rootScope, appService) {
             var controller = function ($scope) {
                 var getAllDiagnosis = function () {
                     var programConfig = appService.getAppDescriptor().getConfigValue("program");
                     var startDate = null, endDate = null;
                     if(programConfig.showDashBoardWithinDateRange){
-                        startDate = $stateParams.dateEnrolled;
-                        endDate = $stateParams.dateCompleted;
+                        startDate = $scope.config.dateEnrolled;
+                        endDate = $scope.config.dateCompleted;
                     }
                     return diagnosisService.getDiagnosis($scope.patientUuid, $scope.visitUuid, startDate, endDate).success(function (response) {
                         var diagnosisMapper = new Bahmni.DiagnosisMapper($rootScope.diagnosisStatus);
