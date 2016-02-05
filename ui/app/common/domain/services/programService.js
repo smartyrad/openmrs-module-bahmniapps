@@ -18,7 +18,7 @@ angular.module('bahmni.common.domain')
         var enrollPatientToAProgram = function (patientUuid, programUuid, dateEnrolled, stateUuid, patientProgramAttributes, programAttributeTypes) {
             var attributeFormatter = new Bahmni.Common.Domain.AttributeFormatter();
             var req = {
-                url: Bahmni.Common.Constants.programEnrollPatientUrl,
+                url: Bahmni.Common.Constants.bahmniProgramEnrollPatientUrl,
                 content: {
                     patient: patientUuid,
                     program: programUuid,
