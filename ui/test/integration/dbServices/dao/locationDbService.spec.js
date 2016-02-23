@@ -1,30 +1,30 @@
 'use strict';
 
 describe('locationDbService tests', function () {
-    var offlineConfigDbService;
+    var locationDbService;
 
     beforeEach(function () {
         module('bahmni.common.offline');
     });
 
-    beforeEach(inject(['offlineConfigDbService', function (offlineConfigDbServiceInjected) {
-        offlineConfigDbService = offlineConfigDbServiceInjected
+    beforeEach(inject(['locationDbService', function (locationDbServiceInjected) {
+        locationDbService = locationDbServiceInjected;
     }]));
 
-    it("insert patient and get from lovefield database", function(done){
-        var schemaBuilder = lf.schema.create('BahmniConfig', 1);
-        Bahmni.Tests.OfflineDbUtils.createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Configs);
+    it("insert locations and get location by uuid from lovefield database", function(done){
+        var schemaBuilder = lf.schema.create('BahmniLocations', 1);
+        Bahmni.Tests.OfflineDbUtils.createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.LoginLocations);
         jasmine.getFixtures().fixturesPath = 'base/test/data';
-        var configJson = JSON.parse(readFixtures('config.json'));
-        var module = "test";
-        var eTag = "etag";
+        var locationsJson = JSON.parse(readFixtures('loginLocations.json'));
         schemaBuilder.connect().then(function(db){
-            offlineConfigDbService.init(db);
-            offlineConfigDbService.insertConfig(module, configJson, eTag).then(function(result){
-                expect(result.etag).toBe(eTag);
-                expect(result.key).toBe(module);
-                expect(result.value).toBe(configJson);
-                done();
+            var uuid = "e905bf88-c461-46e7-a2f1-87db4f611f8b";
+            locationDbService.insertLocations(db, locationsJson.results).then(function(){
+                locationDbService.getLocationByUuid(db, uuid).then(function(location){
+                    expect(location.uuid).toBe(uuid);
+                    expect(location.display).toBe("IPD");
+                    expect(location.name).toBe("IPD");
+                    done();
+                });
             });
         });
     });
