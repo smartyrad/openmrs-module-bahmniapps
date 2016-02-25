@@ -72,7 +72,12 @@ angular.module('bahmni.common.offline')
             };
 
             var insertReferenceData = function(key, data, eTag){
-                AndroidReferenceDataDbService.insertReferenceData(key, JSON.stringify(data), eTag);
+                var referenceData;
+                if(key == "LocaleList")
+                    referenceData = data;
+                else
+                    referenceData = JSON.stringify(data);
+                AndroidReferenceDataDbService.insertReferenceData(key, referenceData, eTag);
                 return $q.when({})
             };
 
@@ -94,10 +99,9 @@ angular.module('bahmni.common.offline')
                 searchAddress: searchAddress,
                 getConfig: getConfig,
                 insertConfig : insertConfig,
-                getReferenceData: getReferenceData,
-                insertReferenceData: insertReferenceData,
-                getLocationByUuid: getLocationByUuid
-
+                getReferenceData : getReferenceData,
+                insertReferenceData : insertReferenceData,
+                getLocationByUuid : getLocationByUuid
             }
         }
     ]);
