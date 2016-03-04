@@ -19,9 +19,7 @@ describe("AdtController", function () {
         });
         appService.getAppDescriptor.and.returnValue({
             getConfigValue: function () {
-                return {
-                    conceptName: ""
-                }
+                return "IPD";
             }, getExtensions: function (a, b) {
                 return {
                     maxPatientsPerBed: 2
