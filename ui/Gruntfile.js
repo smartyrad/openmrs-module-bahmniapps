@@ -72,10 +72,10 @@ module.exports = function (grunt) {
         coverage: {
             options: {
                 thresholds: {
-                    'statements': 63.5, /* Please keep only one digit precision on the numbers. */
+                    'statements': 63.7, /* Please keep only one digit precision on the numbers. */
                     'branches': 52.8,
-                    'functions': 55.1,
-                    'lines': 63.5
+                    'functions': 55.3,
+                    'lines': 63.7
                 },
                 dir: 'coverage',
                 root: '.'

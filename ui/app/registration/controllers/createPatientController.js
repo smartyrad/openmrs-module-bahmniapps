@@ -215,11 +215,6 @@ angular.module('bahmni.registration')
                 return deferred.promise;
             };
 
-
-            $scope.isOffline = function(){
-                return offlineService.isOfflineApp();
-            };
-
             $scope.create = function() {
                 $scope.saveInProgress = true;
                 spinner.forPromise(createPromise()).finally(function() {

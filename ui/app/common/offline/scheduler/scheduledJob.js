@@ -8,12 +8,13 @@ angular.module("bahmni.common.offline")
             var jobPromise = null;
 
             this.start = function() {
-                jobPromise = $interval(worker.execute, interval);
+                this.jobPromise = $interval(worker.execute, interval);
             };
 
             this.stop = function() {
-                if(jobPromise != null) {
-                    $interval.cancel(jobPromise);
+                if(this.jobPromise != null) {
+                    $interval.cancel(this.jobPromise);
+                    this.jobPromise = null;
                 }
             };
 
