@@ -5,8 +5,9 @@ describe("AdtController", function () {
     var appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
     var sessionService = jasmine.createSpyObj('sessionService', ['getLoginLocationUuid']);
     var dispositionService = jasmine.createSpyObj('dispositionService', ['getDispositionActions']);
-    var visitService = jasmine.createSpyObj('visitService', ['getVisitSummary','endVisit']);
-    var encounterService = jasmine.createSpyObj('encounterService', ['create']);
+    var visitService = jasmine.createSpyObj('visitService', ['getVisitSummary', 'endVisit']);
+    var encounterService = jasmine.createSpyObj('encounterService', ['create', 'discharge']);
+    var spinnerService = jasmine.createSpyObj('spinner', ['forPromise']);
     var scope, rootScope, controller;
 
     beforeEach(function () {
@@ -27,26 +28,35 @@ describe("AdtController", function () {
                     maxPatientsPerBed: 2
                 }
             },
-            getConfig: function(){
+            getConfig: function () {
 
             }
         });
 
-        rootScope.encounterConfig = {getVisitTypes:function(){
-            return [];
-        },getAdmissionEncounterTypeUuid : function(){
+        rootScope.encounterConfig = {
+            getVisitTypes: function () {
+                return [];
+            }, getAdmissionEncounterTypeUuid: function () {
 
-        },getDischargeEncounterTypeUuid: function(){
+            }, getDischargeEncounterTypeUuid: function () {
 
-        },getTransferEncounterTypeUuid: function(){
+            }, getTransferEncounterTypeUuid: function () {
 
-        }
+            }
         };
 
         var visitServicePromise = specUtil.createServicePromise('getVisitSummary');
         visitService.getVisitSummary.and.returnValue(visitServicePromise);
         dispositionService.getDispositionActions.and.returnValue({});
         sessionService.getLoginLocationUuid.and.returnValue("someLocationUuid");
+
+        spinnerService.forPromise.and.callFake(function () {
+            return {
+                then: function () {
+                    return {};
+                }
+            }
+        });
 
 
         controller('AdtController', {
@@ -58,7 +68,8 @@ describe("AdtController", function () {
             encounterService: encounterService,
             bedService: bedService,
             appService: appService,
-            visitService: visitService
+            visitService: visitService,
+            spinner: spinnerService
         });
     });
 
@@ -70,9 +81,9 @@ describe("AdtController", function () {
         expect(window.confirm).toHaveBeenCalledWith('Patient Visit Type is OPD, Do you want to close the Visit and start new IPD Visit?');
     });
 
-    it("should close the visit if dialog is confirmed and the visit type is not IPD",function(){
-        scope.visitSummary = {"visitType": "OPD","uuid":"visitUuid"};
-        scope.patient = {uuid:""}; //set because local method in the controller is using it
+    it("should close the visit if dialog is confirmed and the visit type is not IPD", function () {
+        scope.visitSummary = {"visitType": "OPD", "uuid": "visitUuid"};
+        scope.patient = {uuid: ""}; //set because local method in the controller is using it
         scope.adtObservations = [];
         spyOn(window, 'confirm');
 
@@ -91,9 +102,9 @@ describe("AdtController", function () {
 
     });
 
-    it("should not close the visit if visit type is IPD", function(){
-        scope.visitSummary = {"visitType": "IPD","uuid":"visitUuid"};
-        scope.patient = {uuid:""}; //set because local method in the controller is using it
+    it("should not close the visit if visit type is IPD", function () {
+        scope.visitSummary = {"visitType": "IPD", "uuid": "visitUuid"};
+        scope.patient = {uuid: ""}; //set because local method in the controller is using it
         scope.adtObservations = [];
         var stubOnePromise = function (data) {
             return {
@@ -105,5 +116,20 @@ describe("AdtController", function () {
         encounterService.create.and.callFake(stubOnePromise);
 
         scope.admit(null);
-    })
+    });
+
+    describe('Discharge', function () {
+        it('should discharge patient', function () {
+            scope.patient = {uuid: "patient Uuid"};
+            encounterService.discharge.and.callFake(function () {
+                return {
+                    then: function (callback) {
+                        return callback({data: {}})
+                    }
+                }
+            });
+
+            scope.discharge();
+        })
+    });
 });
