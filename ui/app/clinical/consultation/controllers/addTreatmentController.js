@@ -605,7 +605,7 @@ angular.module('bahmni.clinical')
                     drugOrderViewModel.calculateDurationUnit();
                     drugOrderViewModel.calculateQuantityAndUnit();
                     drugOrderViewModel.calculateEffectiveStopDate();
-                    drugOrderViewModel.setUniformDoseFraction();
+                    drugOrderViewModel.setDose();
                     var conflictingDrugOrder = getConflictingDrugOrder(drugOrderViewModel);
                     if (!conflictingDrugOrder) {
                         drugOrderViewModel.include = true;
