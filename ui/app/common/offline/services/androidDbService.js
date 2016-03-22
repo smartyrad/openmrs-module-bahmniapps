@@ -36,14 +36,6 @@ angular.module('bahmni.common.offline')
                 return $q.when(AndroidOfflineService.initSchema());
             };
 
-            var populateAttributeTypes = function () {
-                 $http.get(Bahmni.Common.Constants.RESTWS_V1 +
-                     "/personattributetype?v=custom:(name,uuid,format)").then(function (attributeTypeResponse) {
-                        var personAttributeTypeList = attributeTypeResponse.data.results;
-                        AndroidOfflineService.populateAttributeTypes(JSON.stringify(personAttributeTypeList));
-                });
-            };
-
             var deletePatientData = function (identifier) {
                 AndroidOfflineService.deletePatientData(identifier);
                 return $q.when({});
@@ -73,10 +65,31 @@ angular.module('bahmni.common.offline')
                 return $q.when(JSON.parse(AndroidConfigDbService.insertConfig(module, JSON.stringify(data), eTag)));
             };
 
+            var getReferenceData = function(referenceDataKey){
+                var value = AndroidReferenceDataDbService.getReferenceData(referenceDataKey);
+                value = value != undefined ? JSON.parse(value) : value;
+                return $q.when(value);
+            };
+
+            var insertReferenceData = function(key, data, eTag){
+                var referenceData;
+                if(key == "LocaleList" || (key == "RelationshipTypeMap" && data==""))
+                    referenceData = data;
+                else
+                    referenceData = JSON.stringify(data);
+                AndroidReferenceDataDbService.insertReferenceData(key, referenceData, eTag);
+                return $q.when({})
+            };
+
+            var getLocationByUuid = function(uuid){
+                var value = AndroidLocationDbService.getLocationByUuid(uuid);
+                value = value != undefined ? JSON.parse(value).value : value;
+                return $q.when(value);
+            };
+
             return {
                 init: init,
                 initSchema: initSchema,
-                populateAttributeTypes: populateAttributeTypes,
                 getPatientByUuid: getPatientByUuid,
                 createPatient: createPatient,
                 deletePatientData: deletePatientData,
@@ -85,7 +98,11 @@ angular.module('bahmni.common.offline')
                 insertAddressHierarchy: insertAddressHierarchy,
                 searchAddress: searchAddress,
                 getConfig: getConfig,
-                insertConfig : insertConfig
+                insertConfig : insertConfig,
+                getReferenceData: getReferenceData,
+                insertReferenceData: insertReferenceData,
+                getLocationByUuid: getLocationByUuid
+
             }
         }
     ]);

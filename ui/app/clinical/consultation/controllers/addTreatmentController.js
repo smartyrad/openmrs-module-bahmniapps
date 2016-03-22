@@ -243,12 +243,18 @@ angular.module('bahmni.clinical')
                 if ($scope.treatment.isNewOrderSet) {
                     treatments = $scope.orderSetTreatments;
                 }
+
                 $scope.treatment.dosingInstructionType = Bahmni.Clinical.Constants.flexibleDosingInstructionsClass;
+
                 if ($scope.treatment.isNonCodedDrug) {
                     $scope.treatment.drugNonCoded = $scope.treatment.drugNameDisplay;
                 }
 
-                $scope.treatment.setUniformDoseFraction();
+                var dose = $scope.treatment.getDose();
+
+                if ($scope.treatment.frequencyType === "uniform" && dose > 0) {
+                    $scope.treatment.setDose(dose);
+                }
 
                 var newDrugOrder = $scope.treatment;
                 setNonCodedDrugConcept($scope.treatment);

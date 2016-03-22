@@ -147,11 +147,9 @@
         var morphToMixedFraction = function (number) {
             var mantissa = parseFloat((number - Math.floor(number)).toFixed(2)),
                 abscissa = Math.ceil(number - mantissa);
-
             if (!config.getDoseFractions || _.isEmpty(config.getDoseFractions()) || mantissa === 0) {
                 return number;
             }
-
             var result = _.result(_.find(config.getDoseFractions(), function (item) {
                 return item.value === mantissa;
             }), 'label');
@@ -163,11 +161,33 @@
             return abscissa ? "" + abscissa + result : "" + result;
         };
 
+        var numberBasedDoseAndFrequency = function () {
+            var variableDosingType = self.variableDosingType;
+            var variableDosingString = addDelimiter(morphToMixedFraction(variableDosingType.morningDose || 0) + "-"
+                + morphToMixedFraction(variableDosingType.afternoonDose || 0)
+                + "-" + morphToMixedFraction(variableDosingType.eveningDose || 0), " ");
+
+            if (!self.isVariableDoseEmpty(variableDosingType)) {
+                return addDelimiter((variableDosingString + blankIfFalsy(self.doseUnits)).trim(), ", ")
+            }
+        };
+
+        this.isVariableDoseEmpty = function (variableDosingType) {
+            return (!variableDosingType.morningDose && !variableDosingType.afternoonDose && !variableDosingType.eveningDose);
+        }
+
+        var asNeeded = function (asNeeded) {
+            return asNeeded ? config.translate(null, 'MEDICATION_AS_NEEDED') : '';
+        };
+
         var simpleDoseAndFrequency = function () {
             var uniformDosingType = self.uniformDosingType;
             var mantissa = self.uniformDosingType.doseFraction ? self.uniformDosingType.doseFraction.value : 0;
             var dose = uniformDosingType.dose ? uniformDosingType.dose : 0;
-            var doseAndUnits = blankIfFalsy(morphToMixedFraction(parseFloat(dose) + mantissa)) + " " + blankIfFalsy(self.doseUnits);
+            var doseAndUnits;
+            if(uniformDosingType.dose || mantissa){
+                doseAndUnits = blankIfFalsy(morphToMixedFraction(parseFloat(dose) + mantissa)) + " " + blankIfFalsy(self.doseUnits);
+            }
 
             return addDelimiter(blankIfFalsy(doseAndUnits), ", ") +
                 addDelimiter(blankIfFalsy(uniformDosingType.frequency), ", ");
@@ -554,12 +574,34 @@
             return false;
         };
 
+        var validateUniformDosingType = function () {
+            if (self.uniformDosingType.frequency) {
+                if (self.isDoseAndUnitNonMandatory())
+                  return self.quantityUnit;
+                return validateMandatoryDosingType();
+            }
+            return false;
+        };
+
+        var validateMandatoryDosingType = function () {
+            var dose = self.uniformDosingType.doseFraction && !self.uniformDosingType.dose ? 0 : self.uniformDosingType.dose;
+            var isDoseAndUnitNotEmpty = dose !== void 0 && self.uniformDosingType.doseUnits && self.quantityUnit;
+            var isDoseAndUnitEmpty =  self.uniformDosingType.dose == undefined && !self.uniformDosingType.doseUnits && !self.quantityUnit;
+
+            if (isDoseAndUnitEmpty || isDoseAndUnitNotEmpty)
+                return true;
+            return false;
+        };
+
         var validateVariableDosingType = function () {
+            if(self.isDoseAndUnitNonMandatory())
+                return self.quantityUnit;
+
             return !(self.variableDosingType.morningDose == undefined ||
-            self.variableDosingType.afternoonDose == undefined ||
-            self.variableDosingType.eveningDose == undefined ||
-            self.variableDosingType.doseUnits == undefined ||
-            self.quantityUnit == undefined);
+                self.variableDosingType.afternoonDose == undefined ||
+                self.variableDosingType.eveningDose == undefined ||
+                self.variableDosingType.doseUnits == undefined ||
+                self.quantityUnit == undefined);
         };
 
         this.validate = function () {
@@ -571,8 +613,35 @@
             return false;
         };
 
-        this.loadOrderAttributes = function (drugOrderResponse) {
-            if (config && config.orderAttributes) {
+        this.isDoseAndUnitNonMandatory = function() {
+            return (inputOptionsConfig.routesToMakeDoseSectionNonMandatory
+                && inputOptionsConfig.routesToMakeDoseSectionNonMandatory.indexOf(this.route) > -1);
+        };
+
+        this.validate = function(){
+            if(self.isUniformDosingType()){
+                return validateUniformDosingType();
+            }else if(self.isVariableDosingType()){
+                return validateVariableDosingType();
+            }
+            return false;
+        };
+
+        this.isMantissaRequired = function () {
+            return (!this.isDoseAndUnitNonMandatory() && this.isUniformFrequency && !this.uniformDosingType.dose);
+        };
+
+        this.isUniformDoseUnitRequired = function () {
+            return (!(this.uniformDosingType.dose == undefined) || !(this.uniformDosingType.doseFraction == undefined)
+                || (this.isUniformFrequency  && !this.isDoseAndUnitNonMandatory()));
+        };
+
+        this.isVariableDoseRequired = function () {
+            return (!this.isUniformFrequency && !this.isDoseAndUnitNonMandatory());
+        };
+
+        this.loadOrderAttributes = function(drugOrderResponse){
+            if(config && config.orderAttributes) {
                 var findOrderAttribute = function (drugOrder, orderAttribute) {
                     return _.find(drugOrder.orderAttributes, function (drugOrderAttribute) {
                         return orderAttribute.name === drugOrderAttribute.name;

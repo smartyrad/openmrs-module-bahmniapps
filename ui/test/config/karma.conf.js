@@ -7,6 +7,7 @@ module.exports = function (config) {
         autoWatch: false,
         singleRun: true,
         files: [
+            {pattern: 'test/data/*.json', watched: true, served: true, included: false},
             'app/components/q/q.js',
             'app/components/angular/angular.js',
             'app/components/angular-route/angular-route.js',
@@ -37,16 +38,17 @@ module.exports = function (config) {
             'app/components/hustle/hustle.js',
             'app/lib/modernizr.custom.80690.js',
             'app/common/constants.js',
+            'app/common/domain/init.js',
+            'app/common/domain/**/*.js',
             'app/**/init.js',
             'app/**/constants.js',
             'app/common/uicontrols/**/*.js',
             'app/common/uicontrols/**/**/*.js',
             'app/common/**/*.js',
+            'app/common/**/*.html',
             'app/admin/**/*.js',
             'app/adt/**/*.js',
             'app/clinical/**/*.js',
-            'app/common/**/*.html',
-            'app/common/**/*.js',
             'app/dhis/**/*.js',
             'app/document-upload/**/*.js',
             'app/home/**/*.js',
@@ -56,8 +58,14 @@ module.exports = function (config) {
             'test/support/**/*.js',
             'test/unit/**/*.js',
             'test/integration/**/*.js',
-            'test/integration/utils/*.js',
-            {pattern: 'test/data/*.json', watched: true, served: true, included: false}
+            'test/integration/utils/*.js'
+        ],
+        exclude:[
+            'app/registration/offline/**/*.js',
+            'app/common/**/offline/chrome/*.js',
+            'app/common/**/offline/android/*.js',
+            'test/unit/**/offline/android/*.js',
+            'test/unit/**/offline/chrome/*.js'
         ],
         reporters: ['junit', 'progress', 'coverage'],
         preprocessors: {
@@ -72,12 +80,13 @@ module.exports = function (config) {
             'app/registration/**/*.js': ['coverage'],
             'app/common/displaycontrols/**/views/*.html':['ng-html2js'],
             'app/common/concept-set/views/*.html':['ng-html2js'],
-            'app/clinical/**/**/*.html':['ng-html2js']
+            'app/common/uicontrols/**/views/*.html': ['ng-html2js'],
+            'app/clinical/**/**/*.html': ['ng-html2js']
         },
         coverageReporter: {
             reporters: [
-                {type: 'json', dir: 'coverage/' },
-                {type: 'html', dir: 'coverage/' },
+                {type: 'json', dir: 'coverage/'},
+                {type: 'html', dir: 'coverage/'},
                 {type: 'text-summary'}
             ]
         },

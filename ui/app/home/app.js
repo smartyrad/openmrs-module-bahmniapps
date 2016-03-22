@@ -1,10 +1,21 @@
 'use strict';
 
 angular.module('bahmni.home', ['ui.router', 'httpErrorInterceptor', 'bahmni.common.domain', 'bahmni.common.i18n', 'bahmni.common.uiHelper', 'bahmni.common.util',
-        'bahmni.common.appFramework', 'bahmni.common.logging', 'bahmni.common.routeErrorHandler', 'pascalprecht.translate', 'ngCookies', 'bahmni.common.offline'])
-    .config(['$urlRouterProvider', '$stateProvider', '$httpProvider', '$bahmniTranslateProvider', '$compileProvider', function ($urlRouterProvider, $stateProvider, $httpProvider, $bahmniTranslateProvider, $compileProvider) {
+        'bahmni.common.appFramework', 'bahmni.common.logging', 'bahmni.common.routeErrorHandler', 'pascalprecht.translate', 'ngCookies', 'bahmni.common.offline',
+          'bahmni.common.models'])
+    .config(['$urlRouterProvider', '$stateProvider', '$httpProvider', '$bahmniTranslateProvider', '$compileProvider',
+        function ($urlRouterProvider, $stateProvider, $httpProvider, $bahmniTranslateProvider, $compileProvider) {
         $urlRouterProvider.otherwise('/dashboard');
+
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|file):/);
+
+        // @if DEBUG='production'
+        $compileProvider.debugInfoEnabled(false);
+        // @endif
+
+        // @if DEBUG='development'
+        $compileProvider.debugInfoEnabled(true);
+        // @endif
         $stateProvider
             .state('dashboard',
                 {
@@ -19,11 +30,14 @@ angular.module('bahmni.home', ['ui.router', 'httpErrorInterceptor', 'bahmni.comm
                         initialize: function (initialization, offlineConfigInitialization) {
                             return initialization(offlineConfigInitialization);
                         },
-                        offlineSyncInitialization: function (offlineSyncInitialization, offlineDb) {
-                            return offlineSyncInitialization(offlineDb);
+                        offlineSyncInitialization: function (offlineSyncInitialization, offlineDb, offlineReferenceDataInitialization) {
+                            return offlineSyncInitialization(offlineDb, offlineReferenceDataInitialization);
                         },
                         offlineConfigInitialization: function(offlineConfigInitialization, offlineSyncInitialization){
-                            return offlineConfigInitialization("home", offlineSyncInitialization)
+                            return offlineConfigInitialization(offlineSyncInitialization)
+                        },
+                        offlineReferenceDataInitialization: function(offlineReferenceDataInitialization, offlineDb){
+                            return offlineReferenceDataInitialization(offlineDb, true);
                         }
                     }
                 }).state('login',
@@ -32,7 +46,15 @@ angular.module('bahmni.home', ['ui.router', 'httpErrorInterceptor', 'bahmni.comm
                 templateUrl: 'views/login.html',
                 controller: 'LoginController',
                 resolve: {
-                    initialData: 'loginInitialization'
+                    initialData: function(loginInitialization, offlineReferenceDataInitialization){
+                        return loginInitialization(offlineReferenceDataInitialization)
+                    },
+                    offlineDb: function (offlineDbInitialization) {
+                        return offlineDbInitialization();
+                    },
+                    offlineReferenceDataInitialization: function(offlineReferenceDataInitialization, offlineDb){
+                        return offlineReferenceDataInitialization(offlineDb, false);
+                    }
                 }
             }).state('offline',
             {

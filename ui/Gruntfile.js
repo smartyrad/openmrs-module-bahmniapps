@@ -63,6 +63,12 @@ module.exports = function (grunt) {
             unit: {
                 configFile: 'test/config/karma.conf.js'
             },
+            chrome: {
+                configFile: 'test/config/karma.chrome.conf.js'
+            },
+            android: {
+                configFile: 'test/config/karma.android.conf.js'
+            },
             auto: {
                 configFile: 'test/config/karma.conf.js',
                 singleRun: false,
@@ -373,9 +379,44 @@ module.exports = function (grunt) {
                     DEBUG: 'production'
                 }
             },
-            js : {
-                src : '<%= yeoman.dist %>/registration.min.js',
-                dest : '<%= yeoman.dist %>/registration.min.js'
+            multifile : {
+                files : {
+                    '<%= yeoman.dist %>/registration.min.js' : '<%= yeoman.dist %>/registration.min.js',
+                    '<%= yeoman.dist %>/admin.min.js' : '<%= yeoman.dist %>/admin.min.js',
+                    '<%= yeoman.dist %>/adt.min.js' : '<%= yeoman.dist %>/adt.min.js',
+                    '<%= yeoman.dist %>/document-upload.min.js' : '<%= yeoman.dist %>/document-upload.min.js',
+                    '<%= yeoman.dist %>/home.min.js' : '<%= yeoman.dist %>/home.min.js',
+                    '<%= yeoman.dist %>/orders.min.js' : '<%= yeoman.dist %>/orders.min.js',
+                    '<%= yeoman.dist %>/reports.min.js' : '<%= yeoman.dist %>/reports.min.js',
+                    '<%= yeoman.dist %>/clinical.min.js' : '<%= yeoman.dist %>/clinical.min.js'
+                }
+            },
+            web: {
+                src: ['<%= yeoman.dist %>/**/index.html'],
+                options: {
+                    inline: true,
+                    context: {
+                        ONLINE: true
+                    }
+                }
+            },
+            chrome: {
+                src: ['<%= yeoman.dist %>/**/index.html'],
+                options: {
+                    inline: true,
+                    context: {
+                        CHROME: true
+                    }
+                }
+            },
+            android: {
+                src: '<%= yeoman.dist %>/**/index.html',
+                options: {
+                    inline: true,
+                    context: {
+                        ANDROID: true
+                    }
+                }
             }
         }
     });
@@ -383,6 +424,10 @@ module.exports = function (grunt) {
     grunt.renameTask('regarde', 'watch');
 
     grunt.registerTask('test', ['karma:unit', 'coverage']);
+
+    grunt.registerTask('chrometest', ['karma:chrome']);
+
+    grunt.registerTask('androidtest', ['karma:android']);
 
     grunt.registerTask('dist', [
         'clean:dist',
@@ -403,64 +448,22 @@ module.exports = function (grunt) {
         'npm-install',
         'bower-install',
         'jshint',
-        'test',
         'dist'
     ]);
+
+    grunt.registerTask('tests', function(app){
+        grunt.task.run((app || '') + 'test');
+    });
 
     grunt.registerTask('uglify-and-rename', [
         'uglify',
         'rename:minified'
     ]);
 
-
-    var updatePrefetchList = function (preFetchList) {
-        var replace = require("replace");
-
-        replace({
-            regex: "{pre-fetch-list}",
-            replacement: preFetchList,
-            paths: ['./app/worker.js'],
-            recursive: false,
-            silent: true
-        });
-    };
-
-    var unique = function(array) {
-        return array.filter(function(item, pos) {
-            return array.indexOf(item) === pos;
-        });
-    };
-
-    var getFiles = function (dir, files_) {
-        var fs = require('fs');
-        files_ = files_ || [];
-        var files = fs.readdirSync(dir);
-        for (var i in files){
-            var name = dir + '/' + files[i];
-            if (fs.statSync(name).isDirectory()){
-                getFiles(name, files_);
-            } else {
-                name = "'"+name.split("./app").join("/bahmni")+"'";
-                if(files_.indexOf(name) === -1) {
-                    files_.push(name);
-                }
-            }
-        }
-        return files_;
-    };
-
-    grunt.registerTask('default', ['build', 'uglify-and-rename']);
-    grunt.registerTask('dev', ['build']);
-
-    grunt.registerTask('pre-fetch', 'Generate files to pre-fetch for service worker', function() {
-            var preFetchList = [];
-            var preFetchDirs = ['./app/lib', './app/images', './app/home', './app/registration', './app/i18n/home', './app/i18n/registration'];
-            for (var i in preFetchDirs) {
-                preFetchList = preFetchList.concat(getFiles(preFetchDirs[i], preFetchList));
-            }
-            updatePrefetchList(unique(preFetchList));
-        }
-    );
+    grunt.registerTask('default', ['build', 'tests', 'uglify-and-rename', 'preprocess:web']);
+    grunt.registerTask('dev', ['build', 'tests', 'rename', 'preprocess:web']);
+    grunt.registerTask('chrome', ['build', 'tests:chrome', 'uglify-and-rename', 'preprocess:chrome']);
+    grunt.registerTask('android', ['build', 'tests:android', 'uglify-and-rename', 'preprocess:android']);
 
     grunt.registerTask('bower-install', 'install dependencies using bower', function () {
         var exec = require('child_process').exec;

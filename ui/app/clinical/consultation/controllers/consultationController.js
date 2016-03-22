@@ -137,8 +137,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                             $scope.stateChangeTriggedByDialog = true;
                             event.preventDefault();
                             spinner.hide(toState.spinnerToken);
-                            $scope.toState = toState;
-                            $scope.toParams = toParams;
+                            $scope.toStateConfig = {toState: toState, toParams: toParams};
                             $scope.displayConfirmationDialog();
                         }
                     }
@@ -146,6 +145,9 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                 setCurrentBoardBasedOnPath();
             });
 
+            $scope.$on("event:errorsOnForm", function() {
+                $scope.stateChangeTriggedByDialog = false;
+            });
 
             $scope.displayConfirmationDialog = function (event) {
                 if ($rootScope.hasVisitedConsultation && $scope.showSaveConfirmDialogConfig) {
@@ -178,9 +180,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
 
             $scope.saveAndContinue = function() {
                 ngDialog.close();
-                $state.current = $scope.toState || $state.current;
-                $state.params = $scope.toParams || $state.params;
-                $scope.save(true);
+                $scope.save($scope.toStateConfig);
                 $window.onbeforeunload = null;
             };
 
@@ -190,7 +190,7 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                     $window.open($scope.targetUrl, "_self");
                 }
                 $window.onbeforeunload = null;
-                $state.go($scope.toState, $scope.toParams);
+                $state.go($scope.toStateConfig.toState, $scope.toStateConfig.toParams);
             };
 
             var getUrl = function (board) {
@@ -295,15 +295,15 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                 var shouldAllow = contxChange["allow"];
                 if (!shouldAllow) {
                     var errorMessage = contxChange["errorMessage"] ? contxChange["errorMessage"] : "{{'CLINICAL_FORM_ERRORS_MESSAGE_KEY' | translate }}";
-                    messagingService.showMessage('formError', errorMessage);
+                    messagingService.showMessage('error', errorMessage);
                 }
                 return shouldAllow;
             };
 
-            $scope.save = function (shouldReloadPage) {
+            $scope.save = function (toStateConfig) {
                 if (!isFormValid()) {
                     $scope.$parent.$parent.$broadcast("event:errorsOnForm");
-                    return;
+                    return $q.when({});
                 }
                 return spinner.forPromise($q.all([preSavePromise(), encounterService.getEncounterType($state.params.programUuid, sessionService.getLoginLocationUuid())]).then(function (results) {
                     var encounterData = results[0];
@@ -326,15 +326,15 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                                     if($scope.targetUrl) {
                                         return $window.open($scope.targetUrl, "_self");
                                     }
-                                    return $state.transitionTo($state.current, params, {
+                                    return $state.transitionTo(toStateConfig ? toStateConfig.toState : $state.current, toStateConfig ? toStateConfig.toParams : params, {
                                         inherit: false,
                                         notify: true,
-                                        reload: shouldReloadPage
+                                        reload: (toStateConfig !== undefined)
                                     });
                                 }));
                         }).catch(function (error) {
                             var message = Bahmni.Clinical.Error.translate(error) || "{{'CLINICAL_SAVE_FAILURE_MESSAGE_KEY' | translate}}";
-                            messagingService.showMessage('formError', message);
+                            messagingService.showMessage('error', message);
                         })
                 }));
             };
