@@ -3,8 +3,8 @@
 
     var constructSearchResult = function (concept, searchString) {
         var matchingName = null;
-        var conceptName = concept.displayString || concept.name;
-        if (_.lowerCase(conceptName).indexOf(_.lowerCase(searchString)) != 0) {
+        var conceptName = concept.name.name || concept.name;
+        if (_.lowerCase(conceptName).indexOf(_.lowerCase(searchString)) != -1) {
             var synonyms = _.map(concept.names, 'name');
             matchingName = _.find(synonyms, function (name) {
                 return (name !== conceptName) && name.search(new RegExp(searchString, "i")) !== -1
@@ -21,10 +21,18 @@
 
     var searchWithDefaultConcept = function (searchMethod, request, response) {
         var searchTerm = _.lowerCase(request.term.trim());
+        var answerName1 ;
         var isMatching = function (answer) {
-            var answerName = _.lowerCase(answer.displayString);
+            var foundMatchingName = false;
+            _.each(answer.names, function(answer){
+            var answerName = _.lowerCase(answer.name);
             var defaultConceptName = _.lowerCase(request.defaultConcept.name);
-            return _.includes(answerName, searchTerm) && (answerName !== defaultConceptName);
+                if (_.includes(answerName, searchTerm) && (answerName !== defaultConceptName)) {
+                    answerName1 = answer;
+                    foundMatchingName = true;
+                }
+            });
+            return foundMatchingName;
         };
         var responseMap = _.partial(constructSearchResult, _, searchTerm);
 
