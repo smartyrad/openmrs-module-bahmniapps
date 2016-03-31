@@ -3,7 +3,7 @@
 
     var constructSearchResult = function (concept, searchString) {
         var matchingName = null;
-        var conceptName = concept.name.name || concept.name;
+        var conceptName = concept.displayString || concept.name;
         if (_.lowerCase(conceptName).indexOf(_.lowerCase(searchString)) != -1) {
             var synonyms = _.map(concept.names, 'name');
             matchingName = _.find(synonyms, function (name) {
@@ -25,7 +25,7 @@
         var isMatching = function (answer) {
             var foundMatchingName = false;
             _.each(answer.names, function(answer){
-            var answerName = _.lowerCase(answer.name);
+            var answerName = _.lowerCase(answer.displayString);
             var defaultConceptName = _.lowerCase(request.defaultConcept.name);
                 if (_.includes(answerName, searchTerm) && (answerName !== defaultConceptName)) {
                     answerName1 = answer;
