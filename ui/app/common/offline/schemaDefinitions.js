@@ -1,6 +1,10 @@
 var Bahmni = Bahmni || {};
 Bahmni.Common = Bahmni.Common || {};
 Bahmni.Common.Offline = Bahmni.Common.Offline || {};
+Bahmni.Common.Offline.DBName = 'Bahmni';
+Bahmni.Common.Offline.SchedulerDB = "bahmni-scheduler";
+Bahmni.Common.Offline.SchedulerTable = "scheduler_status";
+Bahmni.Common.Offline.SchedulerPollTime = 2000;
 
 Bahmni.Common.Offline.SchemaDefinitions = {
     AddressHierarchyLevel: {

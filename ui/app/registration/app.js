@@ -101,7 +101,7 @@ angular
 
         if(offlineService.isChromeApp()) {
             if (Bahmni.Common.Offline && Bahmni.Common.Offline.BackgroundWorker) {
-                new Bahmni.Common.Offline.BackgroundWorker(WorkerService, offlineService);
+                new Bahmni.Common.Offline.BackgroundWorker(WorkerService, offlineService, {delay: 1000, repeat: 1});
             }
         }else if(offlineService.isAndroidApp()){
                 scheduledSync();

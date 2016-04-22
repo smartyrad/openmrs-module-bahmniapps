@@ -8,6 +8,24 @@ angular.module('bahmni.common.offline').service('initializeOfflineSchema', [func
         "DATE_TIME": lf.Type.DATE_TIME,
         "OBJECT": lf.Type.OBJECT,
         "ARRAY_BUFFER": lf.Type.ARRAY_BUFFER
+    },
+        LOVEFIELD_DB_CONFIG = {
+        storeType : lf.schema.DataStoreType.INDEXED_DB,
+        onUpgrade: onUpgrade
+    },
+        schemaBuilder = lf.schema.create(Bahmni.Common.Offline.DBName, 2);
+
+    var baseSchema = function() {
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Patient);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAttribute);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAttributeType);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.EventLogMarker);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.AddressHierarchyEntry);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.AddressHierarchyLevel);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAddress);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Configs);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.ReferenceData);
+        createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.LoginLocations);
     };
 
     var onUpgrade = function (rawDb) {
@@ -21,31 +39,14 @@ angular.module('bahmni.common.offline').service('initializeOfflineSchema', [func
         return rawDb.dump();
     };
 
-    var LOVEFIELD_DB_CONFIG = {
-        storeType : lf.schema.DataStoreType.INDEXED_DB,
-        onUpgrade: onUpgrade
-    }, DB_NAME = 'Bahmni';
-
     this.databasePromise = null;
 
     this.initSchema = function () {
-        if(this.databasePromise === null ) {
-            var schemaBuilder = lf.schema.create(DB_NAME, 2);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Patient);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAttribute);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAttributeType);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.EventLogMarker);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.AddressHierarchyEntry);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.AddressHierarchyLevel);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.PatientAddress);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Configs);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.ReferenceData);
-            createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.LoginLocations);
-
+        if(this.databasePromise === null){
+            baseSchema();
             // Add migrations like this
-            // schemaBuilder = lf.schema.create(DB_NAME, 3);
+            // schemaBuilder = lf.schema.create(Bahmni.Common.Offline.DBName, 3);
             // createTable(schemaBuilder, Bahmni.Common.Offline.SchemaDefinitions.Dummy);
-
             this.databasePromise = schemaBuilder.connect(LOVEFIELD_DB_CONFIG);
         }
 

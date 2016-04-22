@@ -480,13 +480,13 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('uglify-and-rename', [
-        'uglify',
+        //'uglify',
         'rename:minified'
     ]);
 
     grunt.registerTask('default', ['build', 'tests', 'uglify-and-rename', 'preprocess:web']);
     grunt.registerTask('dev', ['build', 'tests', 'rename', 'preprocess:web']);
-    grunt.registerTask('chrome', ['bundle', 'tests:chrome', 'uglify-and-rename', 'preprocess:chrome']);
+    grunt.registerTask('chrome', ['bundle',  'uglify-and-rename', 'preprocess:chrome']);
     grunt.registerTask('android', ['bundle', 'tests:android', 'uglify-and-rename', 'preprocess:android']);
 
     grunt.registerTask('bower-install', 'install dependencies using bower', function () {

@@ -3,14 +3,14 @@
 angular.module("bahmni.common.offline")
     .service("scheduledJob", ['$q', '$interval', function($q, $interval) {
         this.create = function(config) {
-            return new Job(config.interval, config.worker);
+            return new Job(config.worker, config.delay, config.count);
         };
 
-        var Job = function(interval, worker) {
+        var Job = function(worker, delay, count) {
             var jobPromise = null;
 
             this.start = function() {
-                jobPromise = $interval(worker.execute, interval);
+                jobPromise = $interval(worker.execute, delay, count);
             };
 
             this.stop = function() {

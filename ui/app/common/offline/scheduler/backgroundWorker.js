@@ -1,4 +1,4 @@
-Bahmni.Common.Offline.BackgroundWorker = function(WorkerService, offlineService) {
+Bahmni.Common.Offline.BackgroundWorker = function(WorkerService, offlineService, syncButtonConfig) {
 
     var app;
     if(offlineService.isChromeApp()){
@@ -27,11 +27,11 @@ Bahmni.Common.Offline.BackgroundWorker = function(WorkerService, offlineService)
         offlineService.isChromeApp = function(){
             return app === 'chrome-app';
         };
-        scheduledSync();
+        scheduledSync(input.config);
     }]);
 
     workerPromise.then(function success(angularWorker) {
-            return angularWorker.run({'app': app});
+            return angularWorker.run({'app': app,'config':syncButtonConfig});
         }, function error(reason) {
             console.log('callback error');
             console.log(reason);

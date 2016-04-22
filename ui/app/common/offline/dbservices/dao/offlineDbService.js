@@ -2,11 +2,10 @@
 
 angular.module('bahmni.common.offline')
     .service('offlineDbService', ['$http', '$q', 'patientDbService', 'patientAddressDbService', 'patientAttributeDbService', 'offlineMarkerDbService', 'offlineAddressHierarchyDbService',
-        'offlineConfigDbService','initializeOfflineSchema', 'referenceDataDbService', 'locationDbService', 'offlineSearchDbService',
+        'offlineConfigDbService','initializeOfflineSchema', 'referenceDataDbService', 'locationDbService', 'offlineSearchDbService','schedulerStatusDbService',
         function ($http, $q, patientDbService, patientAddressDbService, patientAttributeDbService, offlineMarkerDbService, offlineAddressHierarchyDbService,
-                  offlineConfigDbService, initializeOfflineSchema, referenceDataDbService, locationDbService, offlineSearchDbService) {
+                  offlineConfigDbService, initializeOfflineSchema, referenceDataDbService, locationDbService, offlineSearchDbService, schedulerStatusDbService) {
         var db;
-
 
         var createPatient = function (postRequest) {
             var deferred = $q.defer();
@@ -62,6 +61,7 @@ angular.module('bahmni.common.offline')
             offlineConfigDbService.init(offlineDb);
             referenceDataDbService.init(offlineDb);
             offlineSearchDbService.init(offlineDb);
+            schedulerStatusDbService.init();
         };
 
         var initSchema = function () {
@@ -113,7 +113,13 @@ angular.module('bahmni.common.offline')
             return patientAttributeDbService.getAttributeTypes(db);
         };
 
+        var insertSchedulerStage = function(stage){
+            return schedulerStatusDbService.insertSchedulerStage(stage);
+        };
 
+        var clearSchedulerStage = function(stage){
+            return schedulerStatusDbService.clearSchedulerStage(stage);
+        };
 
         return {
             init: init,
@@ -131,6 +137,8 @@ angular.module('bahmni.common.offline')
             getReferenceData: getReferenceData,
             insertReferenceData: insertReferenceData,
             getLocationByUuid: getLocationByUuid,
-            getAttributeTypes : getAttributeTypes
+            getAttributeTypes : getAttributeTypes,
+            insertSchedulerStage: insertSchedulerStage,
+            clearSchedulerStage: clearSchedulerStage
         }
     }]);
