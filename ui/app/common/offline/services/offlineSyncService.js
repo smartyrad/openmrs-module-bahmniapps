@@ -3,21 +3,39 @@
 angular.module('bahmni.common.offline')
     .service('offlineSyncService', ['eventLogService', 'offlineDbService', '$q', 'offlineService', 'androidDbService',
         function (eventLogService, offlineDbService, $q, offlineService, androidDbService) {
-            return function() {
+            return function () {
                 if (offlineService.isAndroidApp()) {
                     offlineDbService = androidDbService;
                 }
 
                 var sync = function () {
-                   return offlineDbService.getMarker().then(function (marker) {
-                        if (marker == undefined) {
-                            marker = {
-                                catchmentNumber: offlineService.getItem('catchmentNumber')
+
+                    return offlineDbService.getMarker("ConceptData").then(function (marker) {
+                        if (!marker)
+                            marker = {};
+                        return syncConceptsForMarker(marker);
+                    }).then(function () {
+                        offlineDbService.getMarker("TransactionalData").then(function (marker) {
+                            if (marker == undefined) {
+                                marker = {
+                                    catchmentNumber: offlineService.getItem('catchmentNumber')
+                                }
                             }
+                            return syncForMarker(marker);
+                        });
+                    })
+
+                };
+
+                var syncConceptsForMarker = function (marker) {
+                    eventLogService.getConceptEventsFor(marker.lastReadEventUuid).then(function (response) {
+                        if (response.data == undefined || response.data.length == 0) {
+                            return;
                         }
-                       return syncForMarker(marker);
+                        readEvent(response.data, 0);
                     });
                 };
+
 
                 var syncForMarker = function (marker) {
                     eventLogService.getEventsFor(marker.catchmentNumber, marker.lastReadEventUuid).then(function (response) {
@@ -48,15 +66,15 @@ angular.module('bahmni.common.offline')
                     var deferrable = $q.defer();
                     switch (event.category) {
                         case 'patient':
-                            offlineDbService.getAttributeTypes().then(function(attributeTypes) {
+                            offlineDbService.getAttributeTypes().then(function (attributeTypes) {
                                 mapAttributesToPostFormat(response.data.person.attributes, attributeTypes);
                                 offlineDbService.createPatient({patient: response.data}).then(function () {
                                     deferrable.resolve();
                                 });
                             });
                             break;
-                        case 'Encounter':
-                            deferrable.resolve();
+                        case 'offline-concepts':
+                            offlineDbService.insertConceptAndUpdateHierarchy({"results": [response.data]});
                             break;
                         case 'addressHierarchy':
                             offlineDbService.insertAddressHierarchy(response.data).then(function () {
@@ -70,7 +88,7 @@ angular.module('bahmni.common.offline')
                     return deferrable.promise;
                 };
 
-                var mapAttributesToPostFormat = function(attributes, attributeTypes){
+                var mapAttributesToPostFormat = function (attributes, attributeTypes) {
                     angular.forEach(attributes, function (attribute) {
                         if (!attribute.voided) {
                             var foundAttribute = _.find(attributeTypes, function (attributeType) {
@@ -87,10 +105,19 @@ angular.module('bahmni.common.offline')
                 };
 
                 var updateMarker = function (event) {
-                    return offlineDbService.insertMarker(event.uuid, offlineService.getItem('catchmentNumber'));
+                    var markerName, catchmentNumber;
+                    if (event.category == "offline-concepts") {
+                        markerName = "ConceptData";
+                        catchmentNumber = null;
+                    }
+                    else {
+                        markerName = "TransactionalData";
+                        catchmentNumber = offlineService.getItem('catchmentNumber');
+                    }
+                    return offlineDbService.insertMarker(markerName, event.uuid, catchmentNumber);
                 };
 
-            return sync();
+                return sync();
             }
         }
     ]);

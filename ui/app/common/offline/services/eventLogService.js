@@ -8,6 +8,12 @@ angular.module('bahmni.common.offline')
             })
         };
 
+        var getConceptEventsFor = function (lastReadUuid) {
+            return $http.get(Bahmni.Common.Constants.eventLogServiceConceptUrl, {
+                params: {uuid: lastReadUuid}
+            })
+        };
+
         var getDataForUrl = function (url) {
             return $http.get(url);
         };
@@ -26,6 +32,7 @@ angular.module('bahmni.common.offline')
 
         return {
             getEventsFor: getEventsFor,
+            getConceptEventsFor: getConceptEventsFor,
             getDataForUrl: getDataForUrl,
             getAddressForLoginLocation: getAddressForLoginLocation,
             getParentAddressHierarchyEntriesForLoginLocation: getParentAddressHierarchyEntriesForLoginLocation

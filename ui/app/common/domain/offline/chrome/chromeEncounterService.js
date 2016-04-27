@@ -34,7 +34,7 @@ angular.module('bahmni.common.domain')
             var getEncounterTypeBasedOnLoginLocation = function () {
                 var deferrable = $q.defer();
                 offlineDbService.getReferenceData("LoginLocationToEncounterTypeMapping").then(function(results){
-                    var mappings = results.value.results[0].mappings;
+                    var mappings = results.data.results[0].mappings;
                     deferrable.resolve({"data": mappings});
                 });
                 return deferrable.promise;

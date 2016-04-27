@@ -2,117 +2,137 @@
 
 angular.module('bahmni.common.offline')
     .service('offlineDbService', ['$http', '$q', 'patientDbService', 'patientAddressDbService', 'patientAttributeDbService', 'offlineMarkerDbService', 'offlineAddressHierarchyDbService',
-        'offlineConfigDbService','initializeOfflineSchema', 'referenceDataDbService', 'locationDbService', 'offlineSearchDbService',
+        'offlineConfigDbService', 'initializeOfflineSchema', 'referenceDataDbService', 'locationDbService', 'offlineSearchDbService', 'conceptDbService',
         function ($http, $q, patientDbService, patientAddressDbService, patientAttributeDbService, offlineMarkerDbService, offlineAddressHierarchyDbService,
-                  offlineConfigDbService, initializeOfflineSchema, referenceDataDbService, locationDbService, offlineSearchDbService) {
-        var db;
+                  offlineConfigDbService, initializeOfflineSchema, referenceDataDbService, locationDbService, offlineSearchDbService, conceptDbService) {
+            var db;
 
 
-        var createPatient = function (postRequest) {
-            var deferred = $q.defer();
-            var uuid = postRequest.patient.uuid;
-            insertPatientData(postRequest)
-                .then(function () {
-                    getPatientByUuid(uuid).then(function (result) {
-                        deferred.resolve({data: result});
-                    })
+            var createPatient = function (postRequest) {
+                var deferred = $q.defer();
+                var uuid = postRequest.patient.uuid;
+                insertPatientData(postRequest)
+                    .then(function () {
+                        getPatientByUuid(uuid).then(function (result) {
+                            deferred.resolve({data: result});
+                        })
+                    });
+                return deferred.promise;
+            };
+
+            var getPatientByUuid = function (uuid) {
+                return patientDbService.getPatientByUuid(db, uuid);
+            };
+
+            var deletePatientData = function (uuid) {
+                var deferred = $q.defer();
+                var queries = [];
+
+                var patientTable = db.getSchema().table('patient');
+                var patientAddress = db.getSchema().table('patient_address');
+                var patientAttributes = db.getSchema().table('patient_attribute');
+
+
+                queries.push(db.delete().from(patientAttributes).where(patientAttributes.patientUuid.eq(uuid)));
+                queries.push(db.delete().from(patientAddress).where(patientAddress.patientUuid.eq(uuid)));
+                queries.push(db.delete().from(patientTable).where(patientTable.uuid.eq(uuid)));
+
+                var tx = db.createTransaction();
+                tx.exec(queries);
+                deferred.resolve({});
+                return deferred.promise;
+            };
+
+            var insertPatientData = function (patientData) {
+                var patient = patientData.patient;
+                var person = patient.person;
+
+                return patientDbService.insertPatientData(db, patientData).then(function (patientUuid) {
+                    patientAttributeDbService.insertAttributes(db, patientUuid, person.attributes);
+                    patientAddressDbService.insertAddress(db, patientUuid, person.addresses[0]);
+                    return patientData;
                 });
-            return deferred.promise;
-        };
 
-        var getPatientByUuid = function (uuid) {
-            return patientDbService.getPatientByUuid(db, uuid);
-        };
+            };
 
-        var deletePatientData = function (uuid) {
-            var deferred = $q.defer();
-            var queries = [];
+            var init = function (offlineDb) {
+                db = offlineDb;
+                offlineMarkerDbService.init(offlineDb);
+                offlineAddressHierarchyDbService.init(offlineDb);
+                offlineConfigDbService.init(offlineDb);
+                referenceDataDbService.init(offlineDb);
+                offlineSearchDbService.init(offlineDb);
+                conceptDbService.init(offlineDb);
+            };
 
-            var patientTable = db.getSchema().table('patient');
-            var patientAddress = db.getSchema().table('patient_address');
-            var patientAttributes = db.getSchema().table('patient_attribute');
+            var initSchema = function () {
+                return initializeOfflineSchema.initSchema();
+            };
 
+            var reinitSchema = function () {
+                return initializeOfflineSchema.reinitSchema();
+            };
+    
+            var getMarker = function (markerName) {
+                return offlineMarkerDbService.getMarker(markerName);
+            };
+    
+            var insertMarker = function (markerName, eventUuid, catchmentNumber) {
+                return offlineMarkerDbService.insertMarker(markerName, eventUuid, catchmentNumber);
+            };
 
-            queries.push(db.delete().from(patientAttributes).where(patientAttributes.patientUuid.eq(uuid)));
-            queries.push(db.delete().from(patientAddress).where(patientAddress.patientUuid.eq(uuid)));
-            queries.push(db.delete().from(patientTable).where(patientTable.uuid.eq(uuid)));
+            var insertAddressHierarchy = function (data) {
+                return offlineAddressHierarchyDbService.insertAddressHierarchy(data)
+            };
 
-            var tx = db.createTransaction();
-            tx.exec(queries);
-            deferred.resolve({});
-            return deferred.promise;
-        };
+            var searchAddress = function (params) {
+                return offlineAddressHierarchyDbService.search(params);
+            };
 
-        var insertPatientData = function (patientData) {
-            var patient = patientData.patient;
-            var person = patient.person;
+            var getConfig = function (module) {
+                return offlineConfigDbService.getConfig(module);
+            };
 
-            return patientDbService.insertPatientData(db, patientData).then(function (patientUuid) {
-                patientAttributeDbService.insertAttributes(db, patientUuid, person.attributes);
-                patientAddressDbService.insertAddress(db, patientUuid, person.addresses[0]);
-                return patientData;
-            });
+            var insertConfig = function (module, data, eTag) {
+                return offlineConfigDbService.insertConfig(module, data, eTag);
+            };
 
-        };
+            var getReferenceData = function (referenceDataKey) {
+                return referenceDataDbService.getReferenceData(referenceDataKey);
 
-        var init = function (offlineDb) {
-            db = offlineDb;
-            offlineMarkerDbService.init(offlineDb);
-            offlineAddressHierarchyDbService.init(offlineDb);
-            offlineConfigDbService.init(offlineDb);
-            referenceDataDbService.init(offlineDb);
-            offlineSearchDbService.init(offlineDb);
-        };
+            };
 
-        var initSchema = function () {
-            return initializeOfflineSchema.initSchema();
-        };
+            var insertReferenceData = function (key, data, eTag) {
+                return referenceDataDbService.insertReferenceData(key, data, eTag);
+            };
 
-        var reinitSchema = function () {
-            return initializeOfflineSchema.reinitSchema();
-        };
+            var getLocationByUuid = function (uuid) {
+                return locationDbService.getLocationByUuid(db, uuid);
+            };
 
-        var getMarker = function () {
-            return offlineMarkerDbService.getMarker();
-        };
+            var getAttributeTypes = function () {
+                return patientAttributeDbService.getAttributeTypes(db);
+            };
 
-        var insertMarker = function (eventUuid, catchmentNumber) {
-            return offlineMarkerDbService.insertMarker(eventUuid, catchmentNumber);
-        };
+            var getConcept = function (conceptUuid) {
+                return conceptDbService.getReferenceData(conceptUuid);
+            };
 
-        var insertAddressHierarchy = function (data) {
-            return offlineAddressHierarchyDbService.insertAddressHierarchy(data)
-        };
+            var getConceptByName = function (conceptUuid) {
+                return conceptDbService.getConceptByName(conceptUuid);
+            };
 
-        var searchAddress = function(params){
-            return offlineAddressHierarchyDbService.search(params);
-        };
+            var insertConceptAndUpdateHierarchy = function (data, parent) {
+                return conceptDbService.insertConceptAndUpdateHierarchy(data, parent);
+            };
 
-        var getConfig = function(module){
-            return offlineConfigDbService.getConfig(module);
-        };
+            var updateChildren = function (concept) {
+                return conceptDbService.updateChildren(concept);
+            };
 
-        var insertConfig = function(module, data, eTag){
-            return offlineConfigDbService.insertConfig(module, data, eTag);
-        };
-
-        var getReferenceData = function(referenceDataKey){
-            return referenceDataDbService.getReferenceData(referenceDataKey);
-
-        };
-
-        var insertReferenceData = function(key, data, eTag){
-            return referenceDataDbService.insertReferenceData(key, data, eTag);
-        };
-
-        var getLocationByUuid = function(uuid){
-            return locationDbService.getLocationByUuid(db, uuid);
-        };
-
-        var getAttributeTypes = function(){
-            return patientAttributeDbService.getAttributeTypes(db);
-        };
-
+            var updateParentJson = function (child) {
+                return conceptDbService.updateParentJson(child);
+            };
 
 
         return {
@@ -131,6 +151,11 @@ angular.module('bahmni.common.offline')
             getReferenceData: getReferenceData,
             insertReferenceData: insertReferenceData,
             getLocationByUuid: getLocationByUuid,
-            getAttributeTypes : getAttributeTypes
+            getAttributeTypes : getAttributeTypes,
+            insertConceptAndUpdateHierarchy: insertConceptAndUpdateHierarchy,
+            getConcept: getConcept,
+            getConceptByName: getConceptByName,
+            updateChildren: updateChildren,
+            updateParentJson: updateParentJson
         }
     }]);

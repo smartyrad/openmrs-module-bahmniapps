@@ -56,10 +56,34 @@ Bahmni.Common.Offline.SchemaDefinitions = {
         nullableColumns: ['name', 'parentId', 'userGeneratedId'],
         primaryKeyColumns: ['uuid']
     },
+    Concept: {
+        tableName: 'concept',
+        columns: [
+            {
+                name: 'data',
+                type: 'STRING'
+            }, {
+                name: 'uuid',
+                type: 'STRING'
+            }, {
+                name: 'name',
+                type: 'STRING'
+            }, {
+                name: 'parents',
+                type: 'OBJECT'
+            }
+        ],
+        nullableColumns: [],
+        primaryKeyColumns: ['uuid']
+    },
 
     EventLogMarker: {
         tableName: 'event_log_marker',
         columns: [
+            {
+                name: 'markerName',
+                type: 'STRING'
+            },
             {
                 name: 'lastReadEventUuid',
                 type: 'STRING'
@@ -71,8 +95,8 @@ Bahmni.Common.Offline.SchemaDefinitions = {
                 type: 'DATE_TIME'
             }
         ],
-        nullableColumns: [],
-        primaryKeyColumns: ['catchmentNumber']
+        nullableColumns: ['catchmentNumber'],
+        primaryKeyColumns: ['markerName']
     },
 
     PatientAttributeType: {
@@ -235,7 +259,7 @@ Bahmni.Common.Offline.SchemaDefinitions = {
                 name: 'key',
                 type: 'STRING'
             }, {
-                name: 'value',
+                name: 'data',
                 type: 'STRING'
             },{
                 name: 'etag',

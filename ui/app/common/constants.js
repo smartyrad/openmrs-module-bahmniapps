@@ -209,7 +209,8 @@ Bahmni.Common = Bahmni.Common || {};
         baseUrl :  BASE_URL,
         customUrl : CUSTOM_URL,
         customLocaleUrl : CUSTOM_LOCALE_URL,
-        eventLogServiceUrl : hostUrl + "/event-log-service/rest/eventlog/getevents",
+        eventLogServiceUrl : hostUrl + "/event-log-service/rest/eventlog/events",
+        eventLogServiceConceptUrl : hostUrl + "/event-log-service/rest/eventlog/concepts",
         faviconUrl : hostUrl + "/bahmni/favicon.ico",
         platformType: {
             chrome: 'chrome',

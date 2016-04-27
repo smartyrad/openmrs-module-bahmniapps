@@ -12,7 +12,7 @@ angular.module('bahmni.common.domain')
                     if(!loginLocations){
                         return $q.reject("Offline data not set up");
                     }
-                    return {"data": loginLocations.value};
+                    return loginLocations;
                 });
             };
 
