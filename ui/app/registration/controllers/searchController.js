@@ -57,6 +57,7 @@ angular.module('bahmni.registration')
                     ).then(function(response) {
                          mapCustomAttributesSearchResults(response);
                          mapProgramAttributesSearchResults(response);
+                         mapDisplayAttributesSearchResults(response);
                          return response;
                     });
                     searchPromise['finally'](function () {
@@ -116,8 +117,29 @@ angular.module('bahmni.registration')
                         result.patientProgramAttributeValue = programAttributesObj;
                     });
                 }
-            }
+            };
 
+            var mapDisplayAttributesSearchResults = function (data) {
+                var filterResult = function (element) {
+                    var result = {};
+                    for (var key in element) {
+                        if(key == 'customAttribute')
+                            result=appendAttributesSearchResults(element.customAttribute,result);
+                        else if(key=='patientProgramAttributeValue')
+                            result=result;
+                        else
+                            result[key] = element[key];
+                    }
+                    return result;
+                }
+                return data.pageOfResults.map(filterResult);
+            };
+
+            var appendAttributesSearchResults = function(customAttribute,result){
+                for(var key in customAttribute)
+                    result[key] = customAttribute[key];
+                return result;
+            };
             var showSearchResults = function (searchPromise) {
                 $scope.noMoreResultsPresent = false;
                 if (searchPromise) {
@@ -130,7 +152,7 @@ angular.module('bahmni.registration')
 
             var setPatientIdentifierSearchConfig = function(){
                 $scope.patientIdentifierSearchConfig = {};
-                $scope.patientIdentifierSearchConfig.show = allSearchConfigs.searchByPatientIdentifier === undefined ? true: allSearchConfigs.searchByPatientIdentifier ;
+                $scope.patientIdentifierSearchConfig.show = allSearchConfigs.searchByPatientIdentifier === undefined ? true : allSearchConfigs.searchByPatientIdentifier;
             };
 
             var setAddressSearchConfig = function(){
@@ -155,6 +177,11 @@ angular.module('bahmni.registration')
                 $scope.programAttributesSearchConfig.show = !_.isEmpty($scope.programAttributesSearchConfig.field);
             };
 
+            var setDisplayAttributesConfig = function () {
+                $scope.displayAttributesConfig = allSearchConfigs.displayAttributesConfig || {};
+                $scope.displayAttributesConfig.show = !_.isEmpty($scope.displayAttributesConfig.fields);
+            };
+
             var initialize = function () {
                 $scope.searchParameters = {};
                 $scope.searchActions = appService.getAppDescriptor().getExtensions("org.bahmni.registration.patient.search.result.action");
@@ -162,6 +189,7 @@ angular.module('bahmni.registration')
                 setAddressSearchConfig();
                 setCustomAttributesSearchConfig();
                 setProgramAttributesSearchConfig();
+                setDisplayAttributesConfig();
             };
 
             var identifyParams = function (querystring) {
@@ -208,7 +236,8 @@ angular.module('bahmni.registration')
 
                 var searchPromise = patientService.search(undefined, patientIdentifier, preferences.identifierPrefix, $scope.addressSearchConfig.field, undefined, undefined, undefined, undefined, $scope.programAttributesSearchConfig.field, $scope.searchParameters.programAttributeFieldValue).then(function (data) {
                     mapCustomAttributesSearchResults(data);
-                    mapProgramAttributesSearchResults(data)
+                    mapProgramAttributesSearchResults(data);
+                    mapDisplayAttributesSearchResults(data);
                     if (data.pageOfResults.length === 1) {
                         var patient = data.pageOfResults[0];
                         var forwardUrl = appService.getAppDescriptor().getConfigValue("searchByIdForwardUrl") || "/patient/{{patientUuid}}";
