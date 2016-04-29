@@ -123,10 +123,8 @@ angular.module('bahmni.registration')
                 var filterResult = function (element) {
                     var result = {};
                     for (var key in element) {
-                        if(key == 'customAttribute')
-                            result=appendAttributesSearchResults(element.customAttribute,result);
-                        else if(key=='patientProgramAttributeValue')
-                            result=result;
+                        if(element[key] instanceof Object)
+                            appendAttributesSearchResults(element[key],result);
                         else
                             result[key] = element[key];
                     }
@@ -134,17 +132,17 @@ angular.module('bahmni.registration')
                 }
                 return data.pageOfResults.map(filterResult);
             };
-
-            var appendAttributesSearchResults = function(customAttribute,result){
-                for(var key in customAttribute)
-                    result[key] = customAttribute[key];
+            
+            var appendAttributesSearchResults = function(attributes,result){
+                for(var key in attributes)
+                    result[key] = attributes[key];
                 return result;
             };
             var showSearchResults = function (searchPromise) {
                 $scope.noMoreResultsPresent = false;
                 if (searchPromise) {
                     searchPromise.then(function (data) {
-                        $scope.results = data.pageOfResults;
+                        $scope.results = mapDisplayAttributesSearchResults(data);
                         $scope.noResultsMessage = $scope.results.length === 0 ? 'REGISTRATION_NO_RESULTS_FOUND' : null;
                     });
                 }
@@ -178,8 +176,14 @@ angular.module('bahmni.registration')
             };
 
             var setDisplayAttributesConfig = function () {
+                if(allSearchConfigs.displayAttributesConfig.fields){
+                    allSearchConfigs.displayAttributesConfig.fields.splice(allSearchConfigs.displayAttributesConfig.maxNoOfAttributes);
+                    if(allSearchConfigs.displayAttributesConfig.headers.length < allSearchConfigs.displayAttributesConfig.fields.length)
+                        allSearchConfigs.displayAttributesConfig.headers = allSearchConfigs.displayAttributesConfig.fields;
+                    else
+                        allSearchConfigs.displayAttributesConfig.headers.splice(allSearchConfigs.displayAttributesConfig.maxNoOfAttributes);
+                }
                 $scope.displayAttributesConfig = allSearchConfigs.displayAttributesConfig || {};
-                $scope.displayAttributesConfig.show = !_.isEmpty($scope.displayAttributesConfig.fields);
             };
 
             var initialize = function () {
@@ -243,7 +247,7 @@ angular.module('bahmni.registration')
                         var forwardUrl = appService.getAppDescriptor().getConfigValue("searchByIdForwardUrl") || "/patient/{{patientUuid}}";
                         $location.url(appService.getAppDescriptor().formatUrl(forwardUrl, {'patientUuid': patient.uuid}));
                     } else if (data.pageOfResults.length > 1) {
-                        $scope.results = data.pageOfResults;
+                        $scope.results = mapDisplayAttributesSearchResults(data);
                     } else {
                         $scope.patientIdentifier = {'patientIdentifier': patientIdentifier};
                         $scope.noResultsMessage = 'REGISTRATION_LABEL_COULD_NOT_FIND_PATIENT';
