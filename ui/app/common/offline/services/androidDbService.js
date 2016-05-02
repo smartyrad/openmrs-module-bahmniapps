@@ -137,6 +137,29 @@ angular.module('bahmni.common.offline')
                 return $q.when(response);
             };
 
+            var insertConceptAndUpdateHierarchy = function(data, parent) {
+                if(!parent) {
+                    parent = null;
+                }
+                else{
+                    parent = JSON.stringify(parent);
+                }
+                AndroidConceptDbService.insertConceptAndUpdateHierarchy(JSON.stringify(data), parent);
+                return $q.when({})
+            };
+
+            var getConcept = function(conceptUuid){
+                var value = AndroidConceptDbService.getConcept(conceptUuid);
+                value = value != undefined ? JSON.parse(value) : value;
+                return $q.when(value);
+            };
+
+            var getConceptByName = function(conceptName){
+                var value = AndroidConceptDbService.getConceptByName(conceptName);
+                value = value != undefined ? JSON.parse(value) : value;
+                return $q.when(value);
+            };
+
             return {
                 init: init,
                 initSchema: initSchema,
@@ -157,7 +180,10 @@ angular.module('bahmni.common.offline')
                 getEncountersByPatientUuid: getEncountersByPatientUuid,
                 createEncounter: createEncounter,
                 insertVisitData: insertVisitData,
-                getVisitByUuid: getVisitByUuid
+                getVisitByUuid: getVisitByUuid,
+                insertConceptAndUpdateHierarchy: insertConceptAndUpdateHierarchy,
+                getConcept: getConcept,
+                getConceptByName: getConceptByName
             }
         }
     ]);
