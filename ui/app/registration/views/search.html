@@ -65,9 +65,8 @@
                 <th><strong>{{ ::'REGISTRATION_LABEL_AGE' | translate}}</strong></th>
                 <th><strong>{{ ::'REGISTRATION_LABEL_REGISTRATION_DATE' | translate}}</strong></th>
                 <th><strong>{{ ::getAddressFieldLabel() }}</strong></th>
-                <th ng-repeat = "field in ::customAttributesSearchConfig.fields"><strong>{{::convertToTableHeader(field)}}</strong></th>
-                <th ng-if="::programAttributesSearchConfig.show"><strong>{{::convertToTableHeader(programAttributesSearchConfig.label)}}</strong></th>
-                <th ng-repeat = "field in ::displayAttributesConfig.fields"><strong>{{::convertToTableHeader(field)}}</strong></th>
+                <th ng-repeat = "field in ::displayAttributesConfig.headers"><strong>{{::convertToTableHeader(field)}}</strong></th>
+
             </tr>
             </thead>
             <tbody>
@@ -82,8 +81,6 @@
                 <td>{{::result.age}}</td>
                 <td>{{::result.dateCreated | bahmniDate}}</td>
                 <td>{{::result.addressFieldValue}}</td>
-                <td ng-repeat = "field in ::customAttributesSearchConfig.fields">{{::result.customAttribute[field] || ""}}</td>
-                <td ng-if="::programAttributesSearchConfig.show">{{getProgramAttributeValues(result)}}</td>
                 <td ng-repeat = "field in ::displayAttributesConfig.fields">{{::result[field] || ""}}</td>
             </tr>
             </tbody>

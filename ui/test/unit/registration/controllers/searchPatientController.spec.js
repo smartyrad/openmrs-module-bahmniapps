@@ -139,7 +139,7 @@ describe('SearchPatientController', function () {
 
                 searchPromise.callThenCallBack({"pageOfResults": results});
 
-                expect(scope.results).toBe(results);
+                expect(scope.results.toString()).toBe(results.toString());
             });
 
             it("should not show the 'no results found message' when patient is found", function () {
