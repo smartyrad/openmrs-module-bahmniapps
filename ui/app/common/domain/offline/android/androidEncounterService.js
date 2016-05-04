@@ -9,7 +9,7 @@ angular.module('bahmni.common.domain')
 
             this.getEncounterTypeBasedOnLoginLocation = function () {
                 return androidDbService.getReferenceData("LoginLocationToEncounterTypeMapping").then(function(results){
-                    var mappings = results.value.results[0].mappings;
+                    var mappings = results.data.results[0].mappings;
                     return {"data": mappings};
                 });
             };
@@ -33,6 +33,6 @@ angular.module('bahmni.common.domain')
             };
 
             this.find = function (params) {
-                return androidDbService.getActiveEncounter(params.patientUuid);
+                return $q.when();
             };
         }]);
