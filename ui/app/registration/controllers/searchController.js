@@ -185,6 +185,7 @@ angular.module('bahmni.registration')
                         allSearchConfigs.displayAttributesConfig.headers.splice(allSearchConfigs.displayAttributesConfig.maxNoOfAttributes);
                 }
                 $scope.displayAttributesConfig = allSearchConfigs.displayAttributesConfig;
+
             };
 
             var initialize = function () {
