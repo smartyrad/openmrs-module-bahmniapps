@@ -26,30 +26,37 @@ angular.module('bahmni.common.uiHelper')
                     $(document).off('click', docClickHandler);
                 };
 
-                $scope.triggerElement.on('click', function(event) {
-                    if($scope.isTargetOpen) {
-                        $scope.isTargetOpen = false;
-                        hideTargetElements(0);
-                        $(document).off('click', docClickHandler);
-                    } else {
-                        $scope.isTargetOpen = true;
-                        showTargetElements();
-                        $(document).on('click', docClickHandler);
-                        event.stopImmediatePropagation();
-                    }
-                });
+                // $scope.triggerElement.on('click', function(event) {
+                //     if($scope.isTargetOpen) {
+                //         $scope.isTargetOpen = false;
+                //         hideTargetElements(0);
+                //         $(document).off('click', docClickHandler);
+                //     } else {
+                //         $scope.isTargetOpen = true;
+                //         showTargetElements();
+                //         $(document).on('click', docClickHandler);
+                //         event.stopImmediatePropagation();
+                //     }
+                // });
             };
 
             this.registerTargetElement = function(targetElement) {
                 targetElement.hide();
                 $scope.targetElements.push(targetElement);
             };
-            $(document).on('click','.reg-wrapper', function () {
-                if ($scope.isTargetOpen) {
-                    $scope.isTargetOpen = false;
-                    hideTargetElements(0);
-                }
-            });
+            //
+            // var handleDocClick = function() {
+            //     if ($scope.isTargetOpen) {
+            //                 $scope.isTargetOpen = false;
+            //                 hideTargetElements(0);
+            //             }
+            // };
+            //
+            // $scope.$on('$destroy', function() {
+            //     $(document).off('click', '.reg-wrapper', handleDocClick);
+            // });
+            //
+            // $(document).on('click','.reg-wrapper', handleDocClick);
         };
 
         return {

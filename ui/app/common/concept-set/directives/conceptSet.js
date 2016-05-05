@@ -230,28 +230,28 @@ angular.module('bahmni.common.conceptSet')
                     });
                 });
 
-                $scope.$root.$on("event:addMore", function (event, observation) {
-                    updateFormConditions([observation], observation)
-                });
+                // $scope.$root.$on("event:addMore", function (event, observation) {
+                //     updateFormConditions([observation], observation)
+                // });
 
-                $scope.$root.$on("event:observationUpdated-" + conceptSetName, function (event, conceptName, rootObservation) {
-                    var formName = rootObservation.concept.name;
-                    var allObsValues = Bahmni.Common.Obs.ObservationUtil.flatten(rootObservation);
-                    var formCondition = Bahmni.ConceptSet.FormConditions.rules && Bahmni.ConceptSet.FormConditions.rules[conceptName];
-                    if (formCondition) {
-                        var flattenedObs = ObservationUtil.flattenObsToArray([rootObservation]);
-                        var conditions = formCondition(formName, allObsValues);
-                        if (conditions.error && !_.isEmpty(conditions.error)) {
-                            messagingService.showMessage('error', conditions.error);
-                            processConditions(flattenedObs, [conceptName], false, true);
-                            return
-                        } else {
-                            processConditions(flattenedObs, [conceptName], false, false);
-                        }
-                        processConditions(flattenedObs, conditions.enable, false);
-                        processConditions(flattenedObs, conditions.disable, true);
-                    }
-                });
+                // $scope.$root.$on("event:observationUpdated-" + conceptSetName, function (event, conceptName, rootObservation) {
+                //     var formName = rootObservation.concept.name;
+                //     var allObsValues = Bahmni.Common.Obs.ObservationUtil.flatten(rootObservation);
+                //     var formCondition = Bahmni.ConceptSet.FormConditions.rules && Bahmni.ConceptSet.FormConditions.rules[conceptName];
+                //     if (formCondition) {
+                //         var flattenedObs = ObservationUtil.flattenObsToArray([rootObservation]);
+                //         var conditions = formCondition(formName, allObsValues);
+                //         if (conditions.error && !_.isEmpty(conditions.error)) {
+                //             messagingService.showMessage('error', conditions.error);
+                //             processConditions(flattenedObs, [conceptName], false, true);
+                //             return
+                //         } else {
+                //             processConditions(flattenedObs, [conceptName], false, false);
+                //         }
+                //         processConditions(flattenedObs, conditions.enable, false);
+                //         processConditions(flattenedObs, conditions.disable, true);
+                //     }
+                // });
 
                 var processConditions = function (flattenedObs, fields, disable, error) {
                     _.each(fields, function (field) {
