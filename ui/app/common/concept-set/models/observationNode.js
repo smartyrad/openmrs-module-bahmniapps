@@ -257,7 +257,9 @@
         },
 
         isValid: function (checkRequiredFields, conceptSetRequired) {
+            console.log(JSON.stringify(this))
             if (this.isNumeric() && this.getAllowDecimal() === false) {
+                console.log('on', this.isAllowDecimal());
                 return this.isAllowDecimal();
             }
             if (this.isGroup()) {
@@ -312,8 +314,12 @@
             return this.primaryObs.getDataTypeName() === "Numeric";
         },
 
+        isSet : function() {
+            return this.concept.set;
+        },
+
         getAllowDecimal: function () {
-            return this.concept.allowDecimal;
+            return this.primaryObs.concept.allowDecimal;
         },
 
         isAllowDecimal: function () {
