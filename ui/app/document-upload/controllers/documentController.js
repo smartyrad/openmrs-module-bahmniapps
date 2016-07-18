@@ -109,18 +109,21 @@ angular.module('opd.documentupload')
             var getEncountersForVisits = function () {
                 return encounterService.getEncountersForEncounterType($rootScope.patient.uuid, encounterTypeUuid).success(function (encounters) {
                     $scope.visits.forEach(function (visit) {
-                        var visitEncounters = encounters.results.filter(function(a) {return(a.visit.uuid==visit.uuid)});
+                        var visitEncounters = encounters.results.filter(function (a) {
+                            return (a.visit.uuid === visit.uuid)
+                        });
                         visit.initSavedFiles(visitEncounters);
                     });
                 });
             };
 
             var setDefaultConcept = function(topLevelConcept) {
+                var concept;
                 if (topLevelConcept.setMembers.length === 1) {
-                    var concept = topLevelConcept.setMembers[0];
+                    concept = topLevelConcept.setMembers[0];
                     $scope.defaultConcept = {'concept':{uuid:concept.uuid, name:concept.name.name, editableName:concept.name.name}, 'value':concept.name.name};
                 }else if($rootScope.appConfig.defaultOption){
-                    var concept = topLevelConcept.setMembers.filter(function(member){
+                    concept = topLevelConcept.setMembers.filter(function(member){
                         return member.name.name === $rootScope.appConfig.defaultOption;
                     })[0];
                     $scope.defaultConcept = {'concept':{uuid:concept.uuid, name:concept.name.name, editableName:concept.name.name}, 'value':concept.name.name};

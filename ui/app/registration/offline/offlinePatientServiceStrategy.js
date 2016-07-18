@@ -90,7 +90,7 @@ angular.module('bahmni.registration')
                 });
             };
 
-            var generateIdentifier = function(patient) {
+            var generateIdentifier = function() {
                 return $q.when({});
             };
 

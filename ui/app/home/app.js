@@ -30,7 +30,7 @@ angular.module('bahmni.home', ['ui.router', 'httpErrorInterceptor', 'bahmni.comm
                         initialize: function (initialization, offlineDb) {
                             return initialization(offlineDb);
                         },
-                        webWorker: function(schedulerService, initialize) {
+                        webWorker: function(schedulerService, initialize) {  // jshint ignore:line
                             return schedulerService.sync();
                         }
                     }
@@ -43,10 +43,10 @@ angular.module('bahmni.home', ['ui.router', 'httpErrorInterceptor', 'bahmni.comm
                     offlineDb: function (offlineDbInitialization) {
                         return offlineDbInitialization();
                     },
-                    initialData: function(loginInitialization, offlineDb){
+                    initialData: function(loginInitialization, offlineDb){  // jshint ignore:line
                         return loginInitialization()
                     },
-                    webWorker: function(schedulerService, initialData) {
+                    webWorker: function(schedulerService, initialData) {  // jshint ignore:line
                         return schedulerService.stopSync();
                     }
                 }

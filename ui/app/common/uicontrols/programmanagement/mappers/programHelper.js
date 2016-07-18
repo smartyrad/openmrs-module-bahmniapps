@@ -51,7 +51,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
         };
 
         function shouldDisplayAllAttributes(programDisplayControlConfig) {
-            return (programDisplayControlConfig && programDisplayControlConfig['programAttributes'] == undefined) || programDisplayControlConfig == undefined;
+            return (programDisplayControlConfig && programDisplayControlConfig['programAttributes'] === undefined) || programDisplayControlConfig === undefined;
         }
 
         this.filterProgramAttributes = function (patientPrograms, programAttributeTypes) {

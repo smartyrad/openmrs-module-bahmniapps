@@ -50,7 +50,7 @@ Bahmni.DocumentUpload.Visit = function () {
     this.assignImageIndex = function(){
         var imageIndex = this.getNoOfImages() -1;
           this.files.map(function(file){
-              if(!(file.encodedValue.indexOf(".pdf") > 0)){
+              if((file.encodedValue.indexOf(".pdf") <= 0)){
                   file.imageIndex = imageIndex;
                   imageIndex--;
               }
@@ -60,7 +60,7 @@ Bahmni.DocumentUpload.Visit = function () {
 
     this.getNoOfImages = function(){
         var imageFiles = _.filter(this.files, function (file) {
-            return !(file.encodedValue.indexOf(".pdf") > 0);
+            return (file.encodedValue.indexOf(".pdf") <= 0);
         });
         return imageFiles.length;
     };

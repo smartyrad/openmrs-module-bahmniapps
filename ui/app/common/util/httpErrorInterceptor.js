@@ -37,21 +37,22 @@ angular.module('httpErrorInterceptor',[])
             function error(response) {
                 var data = response.data;
                 var unexpectedError = "There was an unexpected issue on the server. Please try again";
+                var errorMessage;
                 if (response.status === 500) {
-                    var errorMessage = data.error && data.error.message ? getServerError(data.error.message) : unexpectedError;
+                    errorMessage = data.error && data.error.message ? getServerError(data.error.message) : unexpectedError;
                     showError(errorMessage);
                 } else if (response.status === 409){
-                    var errorMessage = data.error && data.error.message ? getServerError(data.error.message) : "Duplicate entry error";
+                    errorMessage = data.error && data.error.message ? getServerError(data.error.message) : "Duplicate entry error";
                     showError(errorMessage);
                 } else if(response.status === 0){
                     showError("Could not connect to the server. Please check your connection and try again");
                 } else if(response.status === 405){
                     showError(unexpectedError);
                 } else if(response.status === 400){
-                    var errorMessage = data.error && data.error.message ? data.error.message : "Could not connect to the server. Please check your connection and try again";
+                    errorMessage = data.error && data.error.message ? data.error.message : "Could not connect to the server. Please check your connection and try again";
                     showError(errorMessage);
                 } else if (response.status === 403) {
-                    var errorMessage = data.error && data.error.message ? stringAfter(data.error.message, ':') : unexpectedError;
+                    errorMessage = data.error && data.error.message ? stringAfter(data.error.message, ':') : unexpectedError;
                     if(shouldRedirectToLogin(response)){
                             $rootScope.$broadcast('event:auth-loginRequired');
                     }else{
@@ -59,8 +60,8 @@ angular.module('httpErrorInterceptor',[])
 
                     }
                 } else if (response.status === 404) {
-                    if (!_.includes(response.config.url, "implementation_config") && !_.includes(response.config.url, "locale_")
-                        && !_.includes(response.config.url, "offlineMetadata")) {
+                    if (!_.includes(response.config.url, "implementation_config") && !_.includes(response.config.url, "locale_") &&
+                        !_.includes(response.config.url, "offlineMetadata")) {
                         showError("The requested information does not exist");
                     }
                 }

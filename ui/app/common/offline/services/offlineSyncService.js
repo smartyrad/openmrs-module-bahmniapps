@@ -15,7 +15,7 @@ angular.module('bahmni.common.offline')
 
                 var syncConcepts = function() {
                     return offlineDbService.getMarker("ConceptData").then(function (marker) {
-                        if (marker == undefined) {
+                        if (marker === undefined) {
                             marker = {}
                         }
                         return syncConceptsForMarker(marker)
@@ -24,7 +24,7 @@ angular.module('bahmni.common.offline')
 
                 var syncTransactionalData = function() {
                     return offlineDbService.getMarker("TransactionalData").then(function (marker) {
-                        if (marker == undefined) {
+                        if (marker === undefined) {
                             marker = {
                                 catchmentNumber: offlineService.getItem('catchmentNumber')
                             }
@@ -55,7 +55,7 @@ angular.module('bahmni.common.offline')
 
                 var syncAddressHierarchyForMarker = function (marker, levels) {
                     return eventLogService.getAddressEventsFor(marker.catchmentNumber, marker.lastReadEventUuid).then(function (response) {
-                        if (response.data == undefined || response.data.length == 0) {
+                        if (response.data === undefined || response.data.length === 0) {
                             endSync(stages++);
                             return;
                         }
@@ -71,7 +71,7 @@ angular.module('bahmni.common.offline')
 
                 var syncConceptsForMarker = function (marker) {
                     return eventLogService.getConceptEventsFor(marker.lastReadEventUuid).then(function (response) {
-                        if (response.data == undefined || response.data.length == 0) {
+                        if (response.data === undefined || response.data.length === 0) {
                             endSync(stages++);
                             return;
                         }
@@ -87,7 +87,7 @@ angular.module('bahmni.common.offline')
 
                 var syncForMarker = function (marker) {
                     return eventLogService.getEventsFor(marker.catchmentNumber, marker.lastReadEventUuid).then(function (response) {
-                        if (response.data == undefined || response.data.length == 0) {
+                        if (response.data === undefined || response.data.length === 0) {
                             endSync(stages++);
                             return;
                         }
@@ -120,16 +120,16 @@ angular.module('bahmni.common.offline')
                 };
 
                 var readEvent = function (events, index, category) {
-                    if (events.length == index && events.length > 0) {
+                    if (events.length === index && events.length > 0) {
                         var group = category ? category : events[0].category;
                         return syncNextEvents(group);
                     }
-                    if (events.length == index) {
+                    if (events.length === index) {
                         return;
                     }
                     var event = events[index];
                     event.category = category ? category : event.category;
-                    if(event.category == "SHREncounter") {
+                    if(event.category === "SHREncounter") {
                         var uuid = event.object.match(Bahmni.Common.Constants.uuidRegex)[0];
                         event.object = Bahmni.Common.Constants.offlineBahmniEncounterUrl + uuid + "?includeAll=true";
                     }
@@ -144,7 +144,7 @@ angular.module('bahmni.common.offline')
                                         return readEvent(events, ++index, category)
                                     });
                     }).catch(function(response) {
-                        if(parseInt(response.status / 100) == 4 || parseInt(response.status / 100) == 5) {
+                        if(parseInt(response.status / 100) === 4 || parseInt(response.status / 100) === 5) {
                             loggingService.logSyncError(response.config.url, response.status, response.data);
                         }
                         $rootScope.$broadcast("schedulerStage", null, true);
@@ -208,13 +208,13 @@ angular.module('bahmni.common.offline')
 
                 var updateMarker = function (event) {
                     var markerName, catchmentNumber;
-                    if (event.category == "parentAddressHierarchy") {
+                    if (event.category === "parentAddressHierarchy") {
                         markerName = "ParentAddressHierarchyData";
                         catchmentNumber = null;
-                    }else if (event.category == "addressHierarchy") {
+                    }else if (event.category === "addressHierarchy") {
                         markerName = "AddressHierarchyData";
                         catchmentNumber = offlineService.getItem("addressCatchmentNumber");
-                    }else if (event.category == "offline-concepts") {
+                    }else if (event.category === "offline-concepts") {
                         markerName = "ConceptData";
                         catchmentNumber = null;
                     }else{
@@ -225,7 +225,7 @@ angular.module('bahmni.common.offline')
                 };
 
                 var endSync = function (status) {
-                      if (stages == 4 || status == -1){
+                      if (stages === 4 || status === -1){
                           $rootScope.$broadcast("schedulerStage", null);
                       }
                 };

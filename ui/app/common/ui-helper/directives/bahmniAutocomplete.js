@@ -38,7 +38,7 @@ angular.module('bahmni.common.uiHelper')
             },
             select: function (event, ui) {
                 scope.selectedValue = ui.item.value;
-                if(onSelect != null) {
+                if(onSelect !== null) {
                     onSelect(ui.item);
                 }
                 ngModelCtrl.$setViewValue(ui.item.value);
@@ -52,7 +52,7 @@ angular.module('bahmni.common.uiHelper')
                 return true;
             },
             search: function (event, ui) {
-                if(onEdit != null){
+                if(onEdit !== null){
                     onEdit(ui.item);
                 }
                 var searchTerm = $.trim(element.val());
@@ -62,11 +62,11 @@ angular.module('bahmni.common.uiHelper')
                 }
             }
         });
-        var changeHanlder = function(e) {
+        var changeHanlder = function() {
             validateIfNeeded(element.val());
         };
 
-        var keyUpHandler = function(e) {
+        var keyUpHandler = function() {
             validateIfNeeded(element.val());
             scope.$apply();
         };

@@ -51,7 +51,7 @@ angular.module('bahmni.common.offline')
                 );
             };
 
-            if(offlineService.getItem("initialSyncStatus") == "complete")
+            if(offlineService.getItem("initialSyncStatus") === "complete")
                 $state.go('dashboard');
             else
                 spinner.forPromise(init()).then(syncSuccessCallBack,syncFailureCallBack);

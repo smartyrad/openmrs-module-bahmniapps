@@ -2,7 +2,6 @@
 
 angular.module('bahmni.registration')
     .factory('patientService', ['$http', '$rootScope','$bahmniCookieStore','$q', 'patientServiceStrategy', function ($http, $rootScope, $bahmniCookieStore, $q, patientServiceStrategy) {
-        var openmrsUrl = Bahmni.Registration.Constants.openmrsUrl;
         var baseOpenMRSRESTURL = Bahmni.Registration.Constants.baseOpenMRSRESTURL;
 
         var search = function (query, identifier, identifierPrefix, addressFieldName, addressFieldValue, customAttributeValue,

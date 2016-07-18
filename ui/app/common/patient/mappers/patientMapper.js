@@ -95,7 +95,7 @@ Bahmni.PatientMapper = function (patientConfig, $rootScope,$translate) {
     };
 
     var mapGenderText = function (genderChar) {
-        if (genderChar == null) {
+        if (genderChar === null) {
             return null;
         }
         return "<span>"+ $rootScope.genderMap[angular.uppercase(genderChar)]+ "</span>";
@@ -108,7 +108,7 @@ Bahmni.PatientMapper = function (patientConfig, $rootScope,$translate) {
         if (openmrsPatient.person.attributes && openmrsPatient.person.attributes.length > 0) {
             var bloodGroup;
              _.forEach(openmrsPatient.person.attributes, function(attribute) {
-                    if(attribute.attributeType.display == "bloodGroup") {
+                    if(attribute.attributeType.display === "bloodGroup") {
                        bloodGroup = attribute.display;
                     }
             });

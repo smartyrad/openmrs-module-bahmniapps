@@ -56,7 +56,7 @@ angular.module('bahmni.offline', ['ui.router', 'httpErrorInterceptor', 'bahmni.c
                         offlineConfigInitialization: function(offlineConfigInitialization, offlineLocationInitialization){
                             return offlineConfigInitialization(offlineLocationInitialization);
                         },
-                        state: function($state, offlineConfigInitialization){
+                        state: function($state, offlineConfigInitialization){  // jshint ignore:line
                             $state.go('initSync');
                         }
                     }

@@ -9,9 +9,11 @@ angular.module('bahmni.common.patientSearch')
             $scope.search = new Bahmni.Common.PatientSearch.Search(_.without(searchTypes, undefined));
             $scope.search.markPatientEntry();
             $scope.$watch('search.searchType', function(currentSearchType){
-                _.isEmpty(currentSearchType) || fetchPatients(currentSearchType);
+                if(!_.isEmpty(currentSearchType)) {
+                    fetchPatients(currentSearchType);
+                }
             });
-            if($rootScope.currentSearchType != null ) {
+            if($rootScope.currentSearchType !== null ) {
                 $scope.search.switchSearchType($rootScope.currentSearchType);
             }
         };
@@ -26,7 +28,7 @@ angular.module('bahmni.common.patientSearch')
         };
 
         $scope.filterPatientsAndSubmit = function() {
-            if ($scope.search.searchResults.length == 1) {
+            if ($scope.search.searchResults.length === 1) {
                 $scope.forwardPatient($scope.search.searchResults[0]);
             }
         };
@@ -71,7 +73,7 @@ angular.module('bahmni.common.patientSearch')
         };
 
         var mapExtensionToSearchType = function(appExtn) {
-            if(offlineService.isOfflineApp() && appExtn.offline == false){
+            if(offlineService.isOfflineApp() && appExtn.offline === false){
                 return;
             }
             return {
@@ -99,7 +101,7 @@ angular.module('bahmni.common.patientSearch')
                 }
                 return spinner.forPromise(patientService.findPatients(params)).then(function (response) {
                     $scope.search.updatePatientList(response.data);
-                    if($scope.search.searchType != undefined) {
+                    if($scope.search.searchType !== undefined) {
                         $scope.getPatientCount($scope.search.searchType);
                     }
                 });

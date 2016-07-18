@@ -92,7 +92,10 @@ angular.module('bahmni.home')
 
             var getSyncStatusInfo = function () {
                 getLastSyncTime();
-                $scope.isSyncing ? $scope.syncStatusMessage = "Sync in Progress..." : updateSyncStatusMessageBasedOnQueuesCount();
+                if ($scope.isSyncing)
+                    $scope.syncStatusMessage = "Sync in Progress...";
+                else
+                    updateSyncStatusMessageBasedOnQueuesCount();
             };
 
             var setErrorStatusOnErrorsInSync = function(){

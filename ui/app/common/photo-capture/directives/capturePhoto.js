@@ -68,16 +68,19 @@ angular.module('bahmni.common.photoCapture')
                 var sourceY = 0;
                 var destX = 0;
                 var destY = 0;
+                var stretchRatio;
+                var sourceWidth;
+                var sourceHeight;
 
                 if (canvas.width > canvas.height) {
-                    var stretchRatio = ( video.videoWidth / canvas.width );
-                    var sourceWidth = video.videoWidth;
-                    var sourceHeight = Math.floor(canvas.height * stretchRatio);
+                    stretchRatio = ( video.videoWidth / canvas.width );
+                    sourceWidth = video.videoWidth;
+                    sourceHeight = Math.floor(canvas.height * stretchRatio);
                     sourceY = Math.floor((video.videoHeight - sourceHeight)/2);
                 } else {
-                    var stretchRatio = ( video.videoHeight / canvas.height );
-                    var sourceWidth = Math.floor(canvas.width * stretchRatio);
-                    var sourceHeight = video.videoHeight;
+                    stretchRatio = ( video.videoHeight / canvas.height );
+                    sourceWidth = Math.floor(canvas.width * stretchRatio);
+                    sourceHeight = video.videoHeight;
                     sourceX = Math.floor((video.videoWidth - sourceWidth)/2);
                 }
                 var destWidth = Math.floor(canvas.width / pixelRatio);

@@ -14,7 +14,7 @@ Bahmni.Common.Util.DateUtil = {
     },
 
     isInvalid: function(date){
-        return date == "Invalid Date";
+        return date === "Invalid Date";
     },
 
     diffInDaysRegardlessOfTime: function(dateFrom, dateTo) {
@@ -57,8 +57,8 @@ Bahmni.Common.Util.DateUtil = {
     },
 
     createDays: function (startDate, endDate) {
-        var startDate = this.getDate(startDate);
-        var endDate = this.getDate(endDate);
+        startDate = this.getDate(startDate);
+        endDate = this.getDate(endDate);
         var numberOfDays = this.diffInDays(startDate, endDate);
         var days = [];
         for (var i = 0; i <= numberOfDays; i++) {
@@ -76,7 +76,7 @@ Bahmni.Common.Util.DateUtil = {
     },
 
     getDateInMonthsAndYears : function (date, format){
-        var format = format || "MMM YY";
+        format = format || "MMM YY";
         var dateRepresentation = isNaN(Number(date)) ? date : Number(date);
         if(!moment(dateRepresentation).isValid()) {
             return date;
@@ -151,19 +151,19 @@ Bahmni.Common.Util.DateUtil = {
     },
 
     isSameDateTime: function(date1, date2) {
-        if(date1 == null || date2 == null) {
+        if(date1 === null || date2 === null) {
             return false;
         }
         var dateOne = this.parse(date1);
         var dateTwo = this.parse(date2);
-        return dateOne.getTime() == dateTwo.getTime();
+        return dateOne.getTime() === dateTwo.getTime();
     },
 
     isBeforeDate: function(date1, date2){
       return moment(date1).isBefore(moment(date2));
     },
     isSameDate: function(date1, date2) {
-        if(date1 == null || date2 == null) {
+        if(date1 === null || date2 === null) {
             return false;
         }
         var dateOne = this.parse(date1);
@@ -195,7 +195,7 @@ Bahmni.Common.Util.DateUtil = {
             y: 0
         };
 
-        var daysFebruary = to.y % 4 != 0 || (to.y % 100 == 0 && to.y % 400 != 0)? 28 : 29;
+        var daysFebruary = to.y % 4 !== 0 || (to.y % 100 === 0 && to.y % 400 !== 0)? 28 : 29;
         var daysInMonths = [31, daysFebruary, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         age.y = to.y - from.y;
         age.m = to.m - from.m;
@@ -209,7 +209,7 @@ Bahmni.Common.Util.DateUtil = {
         if(from.d > to.d) {
             age.m = age.m -1;
 
-            if(from.m == to.m) {
+            if(from.m === to.m) {
                 age.y = age.y - 1;
                 age.m = age.m + 12;
             }

@@ -1,3 +1,4 @@
+'use strict';
 Bahmni.Common.Offline.BackgroundWorker = function(WorkerService, offlineService, syncButtonConfig) {
 
     var app;
@@ -37,7 +38,7 @@ Bahmni.Common.Offline.BackgroundWorker = function(WorkerService, offlineService,
         }, function error(reason) {
             console.log('Web worker error', reason);
         }
-    ).then(function success(result) {
+    ).then(function success() {
             offlineService.setSchedulerStatus(null);
         }, function error(reason) {
             console.log('Problem with the background scheduler stages', reason);

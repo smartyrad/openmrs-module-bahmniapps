@@ -12,11 +12,11 @@ angular.module('bahmni.common.patient')
 
         };
 
-        this.getRelationships = function (patientUuid) {
+        this.getRelationships = function () {
             return $q.when({data : {}});
         };
 
-        this.findPatients = function (params) {
+        this.findPatients = function () {
             return $q.when({data: []});
         };
 

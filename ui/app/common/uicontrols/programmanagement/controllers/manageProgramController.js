@@ -87,7 +87,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                 }
                 var paths = path.split('.'), current = obj, i;
                 for (i = 0; i < paths.length; ++i) {
-                    if (current[paths[i]] == undefined) {
+                    if (current[paths[i]] === undefined) {
                         return undefined;
                     } else {
                         current = current[paths[i]];
@@ -140,7 +140,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
 
             var getActiveState = function(states){
                 return _.find(states, function(state){
-                    return state.endDate == null && !state.voided;
+                    return state.endDate === null && !state.voided;
                 });
             };
 
@@ -211,7 +211,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
             };
 
             $scope.canRemovePatientState = function(state){
-                return state.endDate == null;
+                return state.endDate === null;
             };
 
             $scope.removePatientState = function(patientProgram){

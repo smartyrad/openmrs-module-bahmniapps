@@ -62,7 +62,7 @@ angular.module('bahmni.reports')
                 messagingService.showMessage("error", "Please select the " + msg.join(" and "));
                 return;
             }
-            if(report.type == 'concatenated' && report.responseType == availableFormats.CSV) {
+            if (report.type === 'concatenated' && report.responseType === availableFormats.CSV) {
                 messagingService.showMessage('error', 'CSV format is not supported for concatenated reports');
                 return;
             }

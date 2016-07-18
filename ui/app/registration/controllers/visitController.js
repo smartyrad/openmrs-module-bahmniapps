@@ -116,13 +116,14 @@ angular.module('bahmni.registration')
                 var deferred = $q.defer();
                 var contxChange = contextChangeHandler.execute();
                 var allowContextChange = contxChange["allow"];
+                var errorMessage;
                 if (!allowContextChange) {
-                    var errorMessage = contxChange["errorMessage"] ? contxChange["errorMessage"] : 'REGISTRATION_LABEL_CORRECT_ERRORS';
+                    errorMessage = contxChange["errorMessage"] ? contxChange["errorMessage"] : 'REGISTRATION_LABEL_CORRECT_ERRORS';
                     messagingService.showMessage('error', errorMessage);
                     deferred.reject("Some fields are not valid");
                     return deferred.promise;
-                }else if(!mandatoryValidate()){ // This ELSE IF condition is to be deleted later.
-                    var errorMessage =  "REGISTRATION_LABEL_ENTER_MANDATORY_FIELDS";
+                } else if(!mandatoryValidate()){ // This ELSE IF condition is to be deleted later.
+                    errorMessage =  "REGISTRATION_LABEL_ENTER_MANDATORY_FIELDS";
                     messagingService.showMessage('error', errorMessage);
                     deferred.reject("Some fields are not valid");
                     return deferred.promise;
@@ -165,7 +166,7 @@ angular.module('bahmni.registration')
 
             var afterSave = function () {
                 var forwardUrl = appService.getAppDescriptor().getConfigValue("afterVisitSaveForwardUrl");
-                if (forwardUrl != null) {
+                if (forwardUrl !== null) {
                     $window.location.href = appService.getAppDescriptor().formatUrl(forwardUrl, {'patientUuid': patientUuid});
                 }
                 else {

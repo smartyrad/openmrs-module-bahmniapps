@@ -22,7 +22,7 @@ angular.module('bahmni.common.uiHelper')
             return deferred.promise;
         };
 
-        var openNewWindow = function (html) {
+        var openNewWindow = function (html) {  // jshint ignore:line
             var newWindow = window.open("printTest.html");
             newWindow.addEventListener('load', function(){ 
                 $(newWindow.document.body).html(html);

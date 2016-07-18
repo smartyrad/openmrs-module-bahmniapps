@@ -19,8 +19,9 @@ angular.module('bahmni.registration')
                     return $1.toUpperCase().replace(/[-_]/, '');
                 });
                 _.each($scope.addressLevels, function (addressLevel) {
-                    if (addressLevel.addressField === columnCamelCase)
+                    if (addressLevel.addressField === columnCamelCase) {
                         columnName = addressLevel.name;
+                    }
                 });
                 return columnName;
             };
@@ -193,8 +194,8 @@ angular.module('bahmni.registration')
                 if (_.isEmpty(patientSearchResultConfigs)) {
                     resultsConfigNotFound = true;
                     patientSearchResultConfigs.address = {"fields": allSearchConfigs.address ? [allSearchConfigs.address.field] : {}};
-                    patientSearchResultConfigs.personAttributes
-                        = {fields: allSearchConfigs.customAttributes ? allSearchConfigs.customAttributes.fields : {}};
+                    patientSearchResultConfigs.personAttributes =
+                    { fields: allSearchConfigs.customAttributes ? allSearchConfigs.customAttributes.fields : {} };
                 }
                 else {
                     if (!patientSearchResultConfigs.address) patientSearchResultConfigs.address = {};

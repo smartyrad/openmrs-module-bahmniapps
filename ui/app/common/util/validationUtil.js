@@ -12,7 +12,7 @@ Bahmni.Common.Util.ValidationUtil = (function () {
             if (!ob.hasOwnProperty(i) || !isAcceptableType(ob[i])) {
                 continue;
             }
-            if ((typeof ob[i]) == 'object') {
+            if ((typeof ob[i]) === 'object') {
                 var flatObject = flattenObject(ob[i]);
                 for (var x in flatObject) {
                     if (!flatObject.hasOwnProperty(x) || !isAcceptableType(flatObject[x])) {
@@ -43,7 +43,7 @@ Bahmni.Common.Util.ValidationUtil = (function () {
             if (!fieldSpecificValidator) {
                 return isValid;
             }
-            if (typeof fieldSpecificValidator.method == 'function' && value) {
+            if (typeof fieldSpecificValidator.method === 'function' && value) {
                 var personAttributeTypeConfig = _.find(objectConfiguration,{name:field});
                 isValid = fieldSpecificValidator.method(field, value, personAttributeTypeConfig);
                 if (!isValid){

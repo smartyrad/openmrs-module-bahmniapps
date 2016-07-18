@@ -14,12 +14,12 @@ angular.module('bahmni.common.uiHelper')
             messageObject.value = message;
             if (errorEvent) {
                 messageObject.isServerError = true;
-            } else if (level == 'info') {
+            } else if (level === 'info') {
                 this.createTimeout('info', 4000);
             }
 
             var index = _.findIndex(this.messages[level], function(msg) {
-                return msg.value == messageObject.value;
+                return msg.value === messageObject.value;
             });
 
             if (index >= 0) {
