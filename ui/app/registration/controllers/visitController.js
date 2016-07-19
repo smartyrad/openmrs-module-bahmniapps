@@ -166,7 +166,7 @@ angular.module('bahmni.registration')
 
             var afterSave = function () {
                 var forwardUrl = appService.getAppDescriptor().getConfigValue("afterVisitSaveForwardUrl");
-                if (forwardUrl !== null) {
+                if (forwardUrl != null) {
                     $window.location.href = appService.getAppDescriptor().formatUrl(forwardUrl, {'patientUuid': patientUuid});
                 }
                 else {

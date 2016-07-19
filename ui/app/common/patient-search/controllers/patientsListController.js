@@ -13,7 +13,7 @@ angular.module('bahmni.common.patientSearch')
                     fetchPatients(currentSearchType);
                 }
             });
-            if($rootScope.currentSearchType !== null ) {
+            if($rootScope.currentSearchType != null ) {
                 $scope.search.switchSearchType($rootScope.currentSearchType);
             }
         };
