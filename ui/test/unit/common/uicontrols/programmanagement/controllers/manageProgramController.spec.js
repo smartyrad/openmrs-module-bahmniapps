@@ -3,7 +3,18 @@
 describe("ManageProgramController", function () {
 
     var scope, messageService, i = 0, programService, _provide, deferred, q, _spinner,
-        retrospectiveEntryService, listOfPrograms, programAttributeTypes, allPrograms;
+        retrospectiveEntryService, listOfPrograms, programAttributeTypes, allPrograms,
+        controller,rootScope;
+
+    var setUp = function () {
+        return controller('ManageProgramController', {
+            $scope: scope,
+            $rootScope: rootScope,
+            q: q,
+            confirmBox:{}
+        });
+    };
+
     beforeEach(module('bahmni.common.uicontrols.programmanagment'));
 
     beforeEach(module(function ($provide) {
@@ -54,8 +65,9 @@ describe("ManageProgramController", function () {
         $provide.value('$stateParams', {configName: "default"});
     }));
 
-
     beforeEach(inject(function ($controller, $rootScope, $q) {
+        controller = $controller;
+        rootScope = $rootScope;
         scope = $rootScope.$new();
         scope.patient = {uuid: "some uuid"};
         q = $q;
@@ -263,17 +275,7 @@ describe("ManageProgramController", function () {
             }
         ];
 
-    })
-
-    var setUp = function () {
-        inject(function ($controller, $rootScope, $q) {
-            $controller('ManageProgramController', {
-                $scope: scope,
-                $rootScope: $rootScope,
-                q: $q
-            });
-        });
-    };
+    });
 
     it("should update active programs list", function () {
         scope.$apply(setUp);
@@ -284,7 +286,6 @@ describe("ManageProgramController", function () {
         expect(scope.programSelected).toEqual(null);
         expect(scope.patientProgramAttributes).toEqual({});
     });
-
 
     it("should return true if patient has enrolled to SomePrograms", function() {
         scope.$apply(setUp);
@@ -324,8 +325,6 @@ describe("ManageProgramController", function () {
         });
     });
 
-
-
     describe("update attributes", function () {
         it("should save program attributes", function () {
             scope.$apply(setUp);
@@ -338,7 +337,6 @@ describe("ManageProgramController", function () {
         });
 
     });
-
 
     describe("transition state", function () {
         it("should validate if state to be transited is starting after the current running state", function () {
@@ -466,5 +464,18 @@ describe("ManageProgramController", function () {
         });
     });
 
+    ddescribe('delete Program', function () {
+        iit('voidPatientProgram should delete program', function (done) {
+            scope.$apply(setUp);
+            _spinner.forPromise.and.callFake(function(x){return x;});
+            programService.updatePatientProgram.and.returnValue(specUtil.respondWithPromise(q,{}));
+            scope.voidPatientProgram(listOfPrograms.activePrograms[0]).then(function(){
+                programService.updatePatientProgram.toHaveBeenCalledWith(listOfPrograms.activePrograms[0],jasmine.any(Object));
+
+
+
+            }).catch(notifyError).finally(done);
+        });
+    });
 
 });

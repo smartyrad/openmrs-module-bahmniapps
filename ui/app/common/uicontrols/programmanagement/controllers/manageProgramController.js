@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('bahmni.common.uicontrols.programmanagment')
-    .controller('ManageProgramController', ['$scope', 'retrospectiveEntryService', '$window', 'programService', 'spinner', 'messagingService', '$stateParams', '$q',
-        function ($scope, retrospectiveEntryService, $window, programService, spinner, messagingService, $stateParams, $q) {
+    .controller('ManageProgramController', ['$scope', 'retrospectiveEntryService', '$window', 'programService',
+        'spinner', 'messagingService', '$stateParams', '$q', 'confirmBox',
+        function ($scope, retrospectiveEntryService, $window, programService,
+                  spinner, messagingService, $stateParams, $q, confirmBox) {
             var DateUtil = Bahmni.Common.Util.DateUtil;
             $scope.programSelected = {};
             $scope.workflowStateSelected = {};
@@ -189,6 +191,39 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                         .then(successCallback, failureCallback)
                 );
                 patientProgram.editing = false;
+            };
+
+            var voidPatientProgram = function (patientProgram) {
+                patientProgram.voided = true;
+                var promise = programService.updatePatientProgram(patientProgram, $scope.programAttributeTypes)
+                    .then(successCallback, failureCallback, _.noop);
+                return spinner.forPromise(promise);
+            };
+            var unVoidPatientProgram = function (patientProgram) {
+                delete patientProgram.voidReason;
+                delete patientProgram.voided;
+            };
+
+            $scope.confirmDeletion = function (patientProgram) {
+                var scope = {};
+                scope.message = 'Are you sure, you want to delete ' + patientProgram.display + '?';
+                scope.cancel = function (closeConfirmBox) {
+                    closeConfirmBox();
+                    unVoidPatientProgram(patientProgram);
+                    patientProgram.deleting = false;
+                };
+                scope.delete = function (closeConfirmBox) {
+                    closeConfirmBox();
+                    voidPatientProgram(patientProgram);
+                };
+                confirmBox({
+                    scope: scope,
+                    actions: ['cancel', 'delete']
+                });
+            };
+
+            $scope.toggleDelete = function (program) {
+                program.deleting = !program.deleting;
             };
 
             $scope.toggleEdit = function (program) {
