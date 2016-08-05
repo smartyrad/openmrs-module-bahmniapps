@@ -627,7 +627,8 @@ angular.module('bahmni.clinical')
                     orderTemplate.concept.name,
                     orderTemplate.dosingInstructions.dose,
                     orderTemplate.dosingInstructions.doseUnits,
-                    $scope.newOrderSet.name
+                    $scope.newOrderSet.name,
+                    orderTemplate.dosingInstructions.dosingRule
                 );
                 return calculatedDose.then(function (calculatedDosage) {
                         orderTemplate.dosingInstructions.dose = calculatedDosage.dose;
