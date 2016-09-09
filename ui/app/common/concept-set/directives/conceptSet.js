@@ -84,6 +84,8 @@ angular.module('bahmni.common.conceptSet')
                                     var conditions = conditionFn(observation.concept.name, valueMap);
                                     processConditions(flattenedObs.slice(_.findIndex(flattenedObs, {uniqueId: eachObsKey.split('|')[1]})), conditions.disable, true);
                                     processConditions(flattenedObs.slice(_.findIndex(flattenedObs, {uniqueId: eachObsKey.split('|')[1]})), conditions.enable, false);
+                                    processConditions(flattenedObs.slice(_.findIndex(flattenedObs, {uniqueId: eachObsKey.split('|')[1]})), conditions.show, false, undefined,false);
+                                    processConditions(flattenedObs.slice(_.findIndex(flattenedObs, {uniqueId: eachObsKey.split('|')[1]})), conditions.hide, false, undefined,true);
                                 }
                             });
                         })
@@ -273,13 +275,16 @@ angular.module('bahmni.common.conceptSet')
                         var conditions = formCondition(formName, allObsValues);
                         if (conditions.error && !_.isEmpty(conditions.error)) {
                             messagingService.showMessage('error', conditions.error);
-                            processConditions(flattenedObs, [conceptName], false, true);
+                            processConditions(flattenedObs, [conceptName], false, true, false);
                             return
                         } else {
-                            processConditions(flattenedObs, [conceptName], false, false);
+                            processConditions(flattenedObs, [conceptName], false, false, false);
                         }
                         processConditions(flattenedObs, conditions.enable, false);
                         processConditions(flattenedObs, conditions.disable, true);
+                        processConditions(flattenedObs, conditions.show, false, undefined,false);
+                        processConditions(flattenedObs, conditions.hide, false, undefined,true);
+
                     }
                 });
 
@@ -289,24 +294,25 @@ angular.module('bahmni.common.conceptSet')
                     cleanUpListenerShowPrevious();
                 });
 
-                var processConditions = function (flattenedObs, fields, disable, error) {
+                var processConditions = function (flattenedObs, fields, disable, error, hide) {
                     _.each(fields, function (field) {
                         var matchingObsArray = _.filter(flattenedObs, function (obs) {
                             return obs.concept.name === field;
                         });
                         if (!_.isEmpty(matchingObsArray)) {
-                            setObservationState(matchingObsArray, disable, error);
+                            setObservationState(matchingObsArray, disable, error, hide);
                         } else {
                             messagingService.showMessage("error", "No element found with name : " + field);
                         }
                     });
                 };
 
-                var setObservationState = function (obsArray, disable, error) {
+                var setObservationState = function (obsArray, disable, error, hide) {
                     if(!_.isEmpty(obsArray)) {
                         _.each(obsArray, function(obs) {
                             obs.disabled = disable;
                             obs.error = error;
+                            obs.hide = hide;
                             if (obs.disabled) {
                                 clearFieldValuesOnDisabling(obs);
                             }
