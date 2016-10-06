@@ -5,7 +5,6 @@ angular.module('bahmni.common.uiHelper')
     return {
         restrict: "A",
         template: "<div class='table-responsive'><div ng-transclude  class='table-responsive-fixedColumn' ></div></div>",
-        transclude: true,
         link: function ($scope, $element) {
             var interval = setTimeout(function () {
                 var tr = $element.find("tr");
@@ -17,7 +16,6 @@ angular.module('bahmni.common.uiHelper')
                         // Row with no columns? Ignore it.
                         return;
                     }
-
                     var column0 = columns[0];
                     var column1 = columns[1];
 
