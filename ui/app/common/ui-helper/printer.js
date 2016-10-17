@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('bahmni.common.uiHelper')
-    .factory('printer', ['$rootScope', '$compile', '$http', '$timeout','$q', function ($rootScope, $compile, $http, $timeout, $q) {
+    .factory('printer', ['$rootScope', '$compile', '$http', '$timeout','$q', 'spinner',
+        function ($rootScope, $compile, $http, $timeout, $q, spinner) {
         var printHtml = function (html) {
             var deferred = $q.defer();
             var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
@@ -31,20 +32,26 @@ angular.module('bahmni.common.uiHelper')
 
         var print = function (templateUrl, data) {
             $rootScope.isBeingPrinted = true;
-            $http.get(templateUrl).success(function(template){
-                var printScope = $rootScope.$new()
+            $http.get(templateUrl).then(function(templateData){
+                var template = templateData.data;
+                var printScope = $rootScope.$new();
                 angular.extend(printScope, data);
                 var element = $compile($('<div>' + template + '</div>'))(printScope);
+                var renderAndPrintPromise = $q.defer();
                 var waitForRenderAndPrint = function() {
                     if(printScope.$$phase || $http.pendingRequests.length) {
                         $timeout(waitForRenderAndPrint, 1000);
                     } else {
                         // Replace printHtml with openNewWindow for debugging
-                        printHtml(element.html());
+                        printHtml(element.html()).then(function () {
+                            $rootScope.isBeingPrinted = false;
+                            renderAndPrintPromise.resolve();
+                        });
                         printScope.$destroy();
                     }
+                    return renderAndPrintPromise.promise;
                 };
-                waitForRenderAndPrint();
+                spinner.forPromise(waitForRenderAndPrint());
             });
         };
 
@@ -54,6 +61,7 @@ angular.module('bahmni.common.uiHelper')
                 var template = response.data;
                 var printScope = scope;
                 var element = $compile($('<div>' + template + '</div>'))(printScope);
+                var renderAndPrintPromise = $q.defer();
                 var waitForRenderAndPrint = function() {
                     if (printScope.$$phase || $http.pendingRequests.length) {
                         $timeout(waitForRenderAndPrint);
@@ -63,10 +71,12 @@ angular.module('bahmni.common.uiHelper')
                             if (afterPrint) {
                                 afterPrint();
                             }
+                            renderAndPrintPromise.resolve();
                         });
                     }
+                    return renderAndPrintPromise.promise;
                 };
-                waitForRenderAndPrint();
+                spinner.forPromise(waitForRenderAndPrint());
             });
         };
         return {
