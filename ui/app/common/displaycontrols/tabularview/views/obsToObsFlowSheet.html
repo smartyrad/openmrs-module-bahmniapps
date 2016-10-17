@@ -13,11 +13,11 @@
                 <i class="fa fa-external-link"></i>
             </h2>
         </div>
+        <div class="placeholder-text" ng-if="obsTable.rows.length == 0">
+            <p>{{'NO_DATA_MESSAGE' | translate}}</p>
+        </div>
 
         <section bindonce="obsTable" class="tabular-obs" fixed-first-column>
-            <div class="placeholder-text" ng-if="obsTable.rows.length == 0">
-                <p>{{'NO_DATA_MESSAGE' | translate}}</p>
-            </div>
 
             <table ng-if="obsTable.rows.length > 0 && getPivotOn() != 'column'">
                 <thead>

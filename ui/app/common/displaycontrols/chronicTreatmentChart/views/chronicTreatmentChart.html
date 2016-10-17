@@ -13,11 +13,11 @@
                 <i class="fa fa-external-link"></i>
             </h2>
         </div>
+        <div class="placeholder-text" ng-if="regimen.rows.length == 0">
+            <p>{{'NO_DATA_MESSAGE' | translate}}</p>
+        </div>
+        <section bindonce="regimen" class="chronic-treatment dashboard-section" fixed-first-column>
 
-        <section bindonce="regimen" class="chronic-treatment dashboard-section">
-            <div class="placeholder-text" ng-if="regimen.rows.length == 0">
-                <p>{{'NO_DATA_MESSAGE' | translate}}</p>
-            </div>
             <table ng-if="regimen.rows.length > 0">
                 <th ng-if="isMonthNumberRequired()">Month</th>
                 <th>Date</th>
