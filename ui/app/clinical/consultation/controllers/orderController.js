@@ -204,6 +204,14 @@ angular.module('bahmni.clinical')
                 $('body').removeClass('show-controller-back');
             });
 
+            $scope.appendPrintNotes = function(order){
+                if(order.previousNote && order.previousNote.indexOf("Need Print.") == -1) {
+                    $scope.orderNoteText = "Need Print." + (order.previousNote || '');
+                }
+                else if(($scope.orderNoteText || '').indexOf("Need Print.") == -1){
+                    $scope.orderNoteText = "Need Print." + ($scope.orderNoteText || '');
+                }
+            };
 
             $scope.setEditedFlag = function(order, orderNoteText){
                 if(order.previousNote !== orderNoteText){
