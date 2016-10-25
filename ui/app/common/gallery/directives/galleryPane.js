@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.common.gallery')
-    .directive('bmGalleryPane', ['$rootScope', '$document', 'observationsService', 'encounterService', 'spinner', 'configurations',
-        function ($rootScope, $document, observationsService, encounterService, spinner, configurations) {
+    .directive('bmGalleryPane', ['$rootScope', '$document', 'observationsService', 'encounterService', 'spinner',
+        function ($rootScope, $document, observationsService, encounterService, spinner) {
 
             var $body = $document.find('body');
 
