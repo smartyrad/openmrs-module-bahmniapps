@@ -33,8 +33,8 @@
     };
 
     angular.module('bahmni.common.domain')
-        .controller('OrderSetController', ['$scope', '$state', 'spinner', '$http', '$q', 'adminOrderSetService', 'messagingService', 'orderTypeService',
-            function ($scope, $state, spinner, $http, $q, adminOrderSetService, messagingService, orderTypeService) {
+        .controller('OrderSetController', ['$scope', '$state', 'spinner', '$http', '$q', 'adminOrderSetService', 'messagingService', 'orderTypeService', '$window',
+            function ($scope, $state, spinner, $http, $q, adminOrderSetService, messagingService, orderTypeService, $window) {
                 $scope.operators = ['ALL', 'ANY', 'ONE'];
                 $scope.conceptNameInvalid = false;
 
@@ -42,17 +42,16 @@
                     $scope.orderSet.orderSetMembers.push(buildOrderSetMember());
                 };
 
-                var isOrderSetHavingMinimumOrders = function(){
-                    return _.filter($scope.orderSet.orderSetMembers, function(setMember) { return !setMember.retired; }).length >= 2;
+                var isOrderSetHavingMinimumOrders = function () {
+                    return _.filter($scope.orderSet.orderSetMembers, function (setMember) { return !setMember.retired; }).length >= 2;
                 };
-
 
                 $scope.remove = function (orderSetMember) {
                     if (orderSetMember.retired == false) {
                         orderSetMember.retired = true;
-                    }
-                    else
+                    } else {
                         _.remove($scope.orderSet.orderSetMembers, orderSetMember);
+                    }
                 };
 
                 $scope.moveUp = function (orderSetMember) {
@@ -93,11 +92,10 @@
                         var currentOrderSetMember = _.find($scope.orderSet.orderSetMembers, function (orderSetMember) {
                             return orderSetMember.concept && (orderSetMember.concept.display === oldOrderSetMember.value && !orderSetMember.concept.uuid);
                         });
-                        if(!_.isUndefined(currentOrderSetMember)) {
+                        if (!_.isUndefined(currentOrderSetMember)) {
                             currentOrderSetMember.concept.uuid = oldOrderSetMember.concept.uuid;
                             newOrderSetMember = null;
                         }
-
                     };
 
                     $scope.onChange = function (oldOrderSetMember) {
@@ -119,7 +117,7 @@
                 $scope.save = function () {
                     if (validationSuccess()) {
                         getValidOrderSetMembers();
-                        spinner.forPromise(adminOrderSetService.createOrUpdateOrderSet($scope.orderSet).then(function (response) {
+                        return spinner.forPromise(adminOrderSetService.createOrUpdateOrderSet($scope.orderSet).then(function (response) {
                             $state.params.orderSetUuid = response.data.uuid;
                             return $state.transitionTo($state.current, $state.params, {
                                 reload: true,
@@ -130,13 +128,18 @@
                             });
                         }));
                     }
+                    return $q.when({});
                 };
 
                 var getValidOrderSetMembers = function () {
-                    $scope.orderSet.orderSetMembers = _.filter($scope.orderSet.orderSetMembers, 'concept')
+                    $scope.orderSet.orderSetMembers = _.filter($scope.orderSet.orderSetMembers, 'concept');
                 };
 
                 var validationSuccess = function () {
+                    if(!validateForm()){
+                        return false;
+                    }
+
                     if (!$scope.orderSet.orderSetMembers || !isOrderSetHavingMinimumOrders()) {
                         messagingService.showMessage('error', 'An orderSet should have a minimum of two orderSetMembers');
                         return false;
@@ -151,6 +154,17 @@
                     };
                 };
 
+                var validateForm = function() {
+                    var requiredFields = angular.element($("[required]"));
+                    for (var i = 0; i < requiredFields.length; i++) {
+                        if (!requiredFields[i].value) {
+                            messagingService.showMessage('error', 'Please fill all mandatory fields');
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+
                 var init = function () {
                     var init = $q.all([
                         orderTypeService.loadAll(),
@@ -162,8 +176,7 @@
                             spinner.forPromise(adminOrderSetService.getOrderSet($state.params.orderSetUuid).then(function (response) {
                                 $scope.orderSet = Bahmni.Common.OrderSet.create(response.data);
                             }));
-                        }
-                        else {
+                        } else {
                             $scope.orderSet = Bahmni.Common.OrderSet.create();
                             $scope.orderSet.operator = $scope.operators[0];
                             $scope.orderSet.orderSetMembers.push(
