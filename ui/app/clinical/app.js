@@ -152,7 +152,8 @@ angular.module('consultation')
             .state('patient.dashboard.show', {
                 url: '/dashboard?dateEnrolled,dateCompleted',
                 params: {
-                    dashboardCachebuster: null
+                    dashboardCachebuster: null,
+                    currentTabKey: null
                 },
                 views: {
                     'dashboard-header': {

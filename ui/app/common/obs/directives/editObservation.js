@@ -82,7 +82,7 @@ angular.module('bahmni.common.obs')
                 var createPromise = encounterService.create($scope.encounter);
                 spinner.forPromise(createPromise).then(function() {
                     $rootScope.hasVisitedConsultation = false;
-                    $state.go($state.current, {}, {reload: true});
+                    $state.go($state.current, $state.params, {reload: true});
                     ngDialog.close();
                     messagingService.showMessage('info', "{{'CLINICAL_SAVE_SUCCESS_MESSAGE_KEY' | translate}}");
                 });

@@ -51,7 +51,7 @@ angular.module('bahmni.clinical')
             };
 
             var getCurrentTab = function(){
-                var currentTabKey =  $location.search().currentTab;
+                var currentTabKey =  $location.search().currentTab || $stateParams.currentTabKey;
                 var currentTab;
                 if(currentTabKey) {
                     currentTab = _.find(clinicalDashboardConfig.visibleTabs, function (tab) {
@@ -68,6 +68,7 @@ angular.module('bahmni.clinical')
                     dashboard.startDate = $stateParams.dateEnrolled;
                     dashboard.endDate = $stateParams.dateCompleted;
                 }
+                $state.params.currentTabKey = dashboard.translationKey;
                 clinicalDashboardConfig.switchTab(dashboard);
                 addTabNameToParams(dashboard);
                 var dashboardModel = Bahmni.Common.DisplayControl.Dashboard.create(dashboard, $filter);
