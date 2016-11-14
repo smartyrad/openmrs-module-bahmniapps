@@ -236,4 +236,21 @@ describe("ConceptSetObservation", function() {
             expect(observation.isValid()).toBeFalsy();
         });
     })
+
+    describe("Image Observation", function () {
+        it("should ignore the value of voided image observation", function () {
+            var imageObservation = {
+                concept: {
+                    name: "Documents, Image",
+                    displayString: "Image"
+                },
+                value: "300/218-Consultation-4076e430-4555-4b7d-bef4-97145ec12100.png",
+                voided: true
+            };
+
+            var observation = new Bahmni.ConceptSet.Observation(imageObservation, null , {});
+            expect(observation.hasValue()).toBeFalsy();
+
+        });
+    });
 });

@@ -305,6 +305,9 @@ Bahmni.ConceptSet.Observation.prototype = {
 
     hasValue: function () {
         var value = this.value;
+        if(this.voided == true){
+            return false;
+        }
         if (value === false) {
             return true;
         }
