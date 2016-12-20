@@ -33,6 +33,7 @@ angular.module('bahmni.common.offline')
                     template: 'views/offlineSyncConfirm.html',
                     class: 'ngdialog-theme-default',
                     closeByEscape: false,
+                    closeByDocument: false,
                     showClose: false,
                     scope: $scope
 
@@ -45,6 +46,7 @@ angular.module('bahmni.common.offline')
                     template: 'views/offlineSyncFailure.html',
                     class: 'ngdialog-theme-default',
                     closeByEscape: false,
+                    closeByDocument: false,
                     showClose: false,
                     scope: $scope
 
