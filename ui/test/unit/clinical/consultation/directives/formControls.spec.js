@@ -1,7 +1,7 @@
 'use strict';
 
 describe("Form Controls", function () {
-    var element, scope, $compile, spinner, provide, observationFormService, renderHelper;
+    var element, scope, $compile, spinner, provide, observationFormService, renderHelper, translate;
 
     beforeEach(
         function () {
@@ -10,8 +10,10 @@ describe("Form Controls", function () {
                 provide = $provide;
                 observationFormService = jasmine.createSpyObj('observationFormService', ['getFormDetail']);
                 spinner = jasmine.createSpyObj('spinner', ['forPromise']);
+                translate = {use(){return 'en'}};
                 provide.value('observationFormService', observationFormService);
                 provide.value('spinner', spinner);
+                provide.value('$translate', translate);
             });
 
             inject(function (_$compile_, $rootScope) {
@@ -71,7 +73,7 @@ describe("Form Controls", function () {
 
     var createElement = function () {
         document.body.innerHTML += '<div id="formUuid"></div>';
-        element = angular.element("<form-controls form=\"{ formName: 'form1', formUuid: 'formUuid' }\"></form-controls>");
+        element = angular.element("<form-controls form=\"{ formName: 'form1', formUuid: 'formUuid', locale: 'en' }\"></form-controls>");
         $compile(element)(scope);
         scope.$digest();
     };
