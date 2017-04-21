@@ -7,74 +7,80 @@ describe("FormHierarchyService", function () {
     var observations;
     var allForms;
     var observationFormService;
-    beforeEach(module('bahmni.common.displaycontrol.observation'));
-    beforeEach(inject(function (_formHierarchyService_, _$q_, _$rootScope_, _observationFormService_) {
-        formHierarchyService = _formHierarchyService_;
-        observationFormService = _observationFormService_;
-        $q = _$q_;
-        $scope = _$rootScope_;
-        allForms = {
-            "data": {
-                "results": [
-                    {
-                        "version": "1",
-                        "name": "test section inside section",
-                        "uuid": "f2d48fb3-75c7-4ab5-93d0-413b9bdcd9cd"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test section with an obs",
-                        "uuid": "7defedec-d983-4b59-a1a7-cb40cf6b0cf1"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test section with an obs and outside obs",
-                        "uuid": "8930383a-69ec-4a27-a7f9-1238ae8a3b48"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test section with obs group",
-                        "uuid": "1b734eb2-f9d0-479a-adb9-da10661343b6"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test single",
-                        "uuid": "5fc39965-9788-4ffc-bfdb-10d7cf13ad3b"
-                    },
-                    {
-                        "version": "2",
-                        "name": "test section with an obs",
-                        "uuid": "version2"
-                    },
-                    {
-                        "version": "3",
-                        "name": "test single",
-                        "uuid": "0e6d396c-133c-45c3-8ca6-340b691ada4f"
-                    },
-                    {
-                        "version": "4",
-                        "name": "test single",
-                        "uuid": "24484918-aceb-461c-b81c-81102979b3b5"
-                    },
-                    {
-                        "version": "5",
-                        "name": "test single",
-                        "uuid": "6f458b2f-cf2e-463a-b49e-6bd4c8dcaaea"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test single option id",
-                        "uuid": "f63f4dc6-c591-4d8f-8f33-d6435ebefeca"
-                    },
-                    {
-                        "version": "1",
-                        "name": "test add more",
-                        "uuid": "f63f4dc6-c591-4d8f-8f33-d6435ebea"
+    var $translate;
+    beforeEach(
+        function() {
+            module('bahmni.common.displaycontrol.observation');
+
+            inject(function (_formHierarchyService_, _$translate_, _$q_, _$rootScope_, _observationFormService_) {
+                formHierarchyService = _formHierarchyService_;
+                observationFormService = _observationFormService_;
+                $q = _$q_;
+                $scope = _$rootScope_;
+                $translate = _$translate_;
+                allForms = {
+                    "data": {
+                        "results": [
+                            {
+                                "version": "1",
+                                "name": "test section inside section",
+                                "uuid": "f2d48fb3-75c7-4ab5-93d0-413b9bdcd9cd"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test section with an obs",
+                                "uuid": "7defedec-d983-4b59-a1a7-cb40cf6b0cf1"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test section with an obs and outside obs",
+                                "uuid": "8930383a-69ec-4a27-a7f9-1238ae8a3b48"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test section with obs group",
+                                "uuid": "1b734eb2-f9d0-479a-adb9-da10661343b6"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test single",
+                                "uuid": "5fc39965-9788-4ffc-bfdb-10d7cf13ad3b"
+                            },
+                            {
+                                "version": "2",
+                                "name": "test section with an obs",
+                                "uuid": "version2"
+                            },
+                            {
+                                "version": "3",
+                                "name": "test single",
+                                "uuid": "0e6d396c-133c-45c3-8ca6-340b691ada4f"
+                            },
+                            {
+                                "version": "4",
+                                "name": "test single",
+                                "uuid": "24484918-aceb-461c-b81c-81102979b3b5"
+                            },
+                            {
+                                "version": "5",
+                                "name": "test single",
+                                "uuid": "6f458b2f-cf2e-463a-b49e-6bd4c8dcaaea"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test single option id",
+                                "uuid": "f63f4dc6-c591-4d8f-8f33-d6435ebefeca"
+                            },
+                            {
+                                "version": "1",
+                                "name": "test add more",
+                                "uuid": "f63f4dc6-c591-4d8f-8f33-d6435ebea"
+                            }
+                        ]
                     }
-                ]
-            }
-        };
-    }));
+                };
+            });
+        });
 
     it("should process multiple select type to observation", function () {
         var observations = [{
@@ -144,6 +150,64 @@ describe("FormHierarchyService", function () {
         expect(value.concept.shortName).toBe("myForm");
         expect(value.groupMembers.length).toBe(1);
         expect(value.groupMembers[0].concept.shortName).toBe("Sickling Test");
+    });
+
+    it("should translate label of observation according to selected locale", function () {
+        var observations = [{
+            "key": "1488782460000",
+            "value": [{
+                "groupMembers": [{
+                    "groupMembers": [],
+                    "formFieldPath": "myForm.1/1-0",
+                    "concept": {
+                        "shortName": "Temperature"
+                    }
+                }],
+                "formNamespace": "Bahmni",
+                "formFieldPath": "myForm.1/1-0",
+                "concept": {
+                    "uuid": "72ae28f1-4be4-499a-a8f5-aff54a11c9e3",
+                    "name": "Sickling Test",
+                    "dataType": "Text",
+                    "shortName": "Sickling Test",
+                    "conceptClass": "LabTest",
+                    "hiNormal": null,
+                    "lowNormal": null,
+                    "set": false,
+                    "mappings": []
+                },
+                "valueAsString": "1",
+                "conceptNameToDisplay": "Sickling Test",
+                "value": "1",
+                "conceptConfig": []
+            }],
+            "date": "1488782460000",
+            "isOpen": true
+        }];
+
+        var formDetails = {
+            name: "myForm",
+            controls: [{
+                type: "obsControl",
+                label: {
+                    type: "label",
+                    value: "WEIGHT",
+                    translation_key:"WEIGHT_1"},
+                id: "1"
+            }],
+            locale: {
+                en: {
+                    WEIGHT_1:"weight"
+                }
+            }
+        }
+
+        spyOn($translate, 'use').and.returnValue('en');
+        formHierarchyService.build(observations);
+        var value = observations[0].value[0];
+        formHierarchyService.createSectionForSingleForm(value, formDetails);
+
+        expect(value.groupMembers[0].concept.shortName).toBe("weight");
     });
 
     it('should construct dummy obs group for single observation from form within multiple observations', function () {
@@ -365,7 +429,7 @@ describe("FormHierarchyService", function () {
                         "conceptClass": "weight"
                     },
                     "valueAsString": "50.0"
-                },{
+                }, {
                     "groupMembers": [],
                     "formNamespace": "Bahmni",
                     "formFieldPath": "test section with an obs.1/1-1",
@@ -375,7 +439,7 @@ describe("FormHierarchyService", function () {
                         "conceptClass": "weight"
                     },
                     "valueAsString": "100.0"
-                },{
+                }, {
                     "groupMembers": [],
                     "formNamespace": "Bahmni",
                     "formFieldPath": "test section with an obs.1/1-2",
@@ -443,7 +507,7 @@ describe("FormHierarchyService", function () {
                         "conceptClass": "weight"
                     },
                     "valueAsString": "150.0"
-                },{
+                }, {
                     "groupMembers": [],
                     "formNamespace": "Bahmni",
                     "formFieldPath": "test section with an obs.1/1-1",
@@ -453,7 +517,7 @@ describe("FormHierarchyService", function () {
                         "conceptClass": "weight"
                     },
                     "valueAsString": "100.0"
-                },{
+                }, {
                     "groupMembers": [],
                     "formNamespace": "Bahmni",
                     "formFieldPath": "test section with an obs.1/1-0",

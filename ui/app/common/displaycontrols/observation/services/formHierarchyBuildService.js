@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bahmni.common.displaycontrol.observation')
-    .service('formHierarchyService', ['observationFormService', function (observationFormService) {
+    .service('formHierarchyService', ['observationFormService','$translate', function (observationFormService, $translate) {
         var self = this;
 
         self.build = function (observations) {
@@ -87,7 +87,7 @@ angular.module('bahmni.common.displaycontrol.observation')
             });
         };
 
-        self.parseSection = function (members, controls, value) {
+        self.parseSection = function (members, controls, value, localeData) {
             var sectionIsEmpty = true;
             _.forEach(controls, function (control) {
                 var dummyObsGroup = {
@@ -98,20 +98,23 @@ angular.module('bahmni.common.displaycontrol.observation')
                     }
                 };
                 if (control.type == "section") {
-                    dummyObsGroup.concept.shortName = control.label.value;
+                    dummyObsGroup.concept.shortName = self.translateByKey(control.label.translation_key, localeData, control.label.value);
                     value.groupMembers.push(dummyObsGroup);
-                    if (!self.parseSection(members, control.controls, dummyObsGroup)) {
+                    if (!self.parseSection(members, control.controls, dummyObsGroup,localeData)) {
                         value.groupMembers.pop();
                     } else {
                         sectionIsEmpty = false;
                     }
-                } else {
+                }
+                else {
                     var member = self.getMemberFromFormByFormFieldPath(members, control.id);
                     if (member.length != 0) {
                         if (member[0].formFieldPath.split('-')[1] != 0) {
                             _.reverse(member);
                         }
+
                         _.map(member, function (m) {
+                            m.concept.shortName = self.translateByKey(control.label.translation_key, localeData, m.concept.shortName);
                             value.groupMembers.push(m);
                         });
                         sectionIsEmpty = false;
@@ -124,11 +127,19 @@ angular.module('bahmni.common.displaycontrol.observation')
             return value;
         };
 
+        self.translateByKey = function (translation_key, localeData, defaultValue) {
+            if(translation_key && localeData) {
+                var locale = $translate.use();
+                return localeData[locale][translation_key] || defaultValue;
+            }
+            return defaultValue;
+        };
+
         self.createSectionForSingleForm = function (obsFromSameForm, formDetails) {
             var members = obsFromSameForm.groupMembers.slice();
             obsFromSameForm.groupMembers.splice(0, obsFromSameForm.groupMembers.length);
 
-            return self.parseSection(members, formDetails.controls, obsFromSameForm);
+            return self.parseSection(members, formDetails.controls, obsFromSameForm, formDetails.locale);
         };
 
         self.createDummyObsGroupForSectionsForForm = function (bahmniObservations) {
