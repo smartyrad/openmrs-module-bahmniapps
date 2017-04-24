@@ -210,6 +210,64 @@ describe("FormHierarchyService", function () {
         expect(value.groupMembers[0].concept.shortName).toBe("weight");
     });
 
+    it("should translate label to default when there localData did not contain the local", function () {
+        var observations = [{
+            "key": "1488782460000",
+            "value": [{
+                "groupMembers": [{
+                    "groupMembers": [],
+                    "formFieldPath": "myForm.1/1-0",
+                    "concept": {
+                        "shortName": "Temperature"
+                    }
+                }],
+                "formNamespace": "Bahmni",
+                "formFieldPath": "myForm.1/1-0",
+                "concept": {
+                    "uuid": "72ae28f1-4be4-499a-a8f5-aff54a11c9e3",
+                    "name": "Sickling Test",
+                    "dataType": "Text",
+                    "shortName": "default",
+                    "conceptClass": "LabTest",
+                    "hiNormal": null,
+                    "lowNormal": null,
+                    "set": false,
+                    "mappings": []
+                },
+                "valueAsString": "1",
+                "conceptNameToDisplay": "Sickling Test",
+                "value": "1",
+                "conceptConfig": []
+            }],
+            "date": "1488782460000",
+            "isOpen": true
+        }];
+
+        var formDetails = {
+            name: "myForm",
+            controls: [{
+                type: "obsControl",
+                label: {
+                    type: "label",
+                    value: "WEIGHT",
+                    translation_key:"WEIGHT_1"},
+                id: "1"
+            }],
+            locale: {
+                en: {
+                    WEIGHT_1:"weight"
+                }
+            }
+        }
+
+        spyOn($translate, 'use').and.returnValue('fr');
+        formHierarchyService.build(observations);
+        var value = observations[0].value[0];
+        formHierarchyService.createSectionForSingleForm(value, formDetails);
+
+        expect(value.groupMembers[0].concept.shortName).toBe("default");
+    });
+
     it('should construct dummy obs group for single observation from form within multiple observations', function () {
         var observations = [{
             "value": [{

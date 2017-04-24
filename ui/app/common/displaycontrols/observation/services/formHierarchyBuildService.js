@@ -128,9 +128,9 @@ angular.module('bahmni.common.displaycontrol.observation')
         };
 
         self.translateByKey = function (translation_key, localeData, defaultValue) {
-            if(translation_key && localeData) {
-                var locale = $translate.use();
-                return localeData[locale][translation_key] || defaultValue;
+            var locale = $translate.use();
+            if(translation_key && localeData && localeData[locale]) {
+                return localeData[locale][translation_key];
             }
             return defaultValue;
         };
