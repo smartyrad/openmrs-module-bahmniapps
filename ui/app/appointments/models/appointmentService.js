@@ -1,7 +1,7 @@
 'use strict';
 
 Bahmni.Appointments.AppointmentService = (function () {
-    var timeFormat = 'HH:mm:ss';
+    var timeFormat = 'THH:mm:ss';
     var Service = function (serviceDetails) {
         angular.extend(this, serviceDetails);
     };

@@ -18,7 +18,7 @@ angular.module('bahmni.appointments')
             $scope.createNewAppointment = function () {
             };
             var init = function () {
-                $scope.navigateTo('calendar');
+                $scope.navigateTo('list');
             };
             return init();
         }]);

@@ -2,7 +2,7 @@
 
 describe('AppointmentService', function () {
     var dateUtil = Bahmni.Common.Util.DateUtil;
-    var timeFormat = 'HH:mm:ss';
+    var timeFormat = 'THH:mm:ss';
     var constDays = [{
         dayOfWeek: 'SUNDAY',
         isSelected: false
