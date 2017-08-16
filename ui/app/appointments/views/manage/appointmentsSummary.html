@@ -1,1 +1,20 @@
-<div>this is summary</div>
+<div>
+    <div>
+        <date-picker view-date="currentDate"></date-picker>
+    </div>
+<table style="top:50px; position:relative;">
+    <tr>
+        <th></th>
+        <th ng-repeat="date in weekDates">
+            {{date}}
+        </th>
+    </tr>
+    <tr ng-repeat="appointment in appointments">
+        <td>
+            {{appointment.appointmentService.name}}
+        </td>
+        <td ng-repeat="date in weekDates">
+            {{appointment.appointmentCountList[date].allAppointmentsCount}} <span ng-if="appointment.appointmentCountList[date].missedAppointmentsCount">({{appointment.appointmentCountList[date].missedAppointmentsCount}} missed)</span>
+        </td>
+    </tr>
+</table>
