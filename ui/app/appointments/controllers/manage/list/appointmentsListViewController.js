@@ -38,6 +38,7 @@ angular.module('bahmni.appointments')
 
             $scope.getAppointmentsForDate = function (viewDate) {
                 $stateParams.viewDate = viewDate;
+                $scope.selectedAppointment = undefined;
                 var params = {forDate: viewDate};
                 spinner.forPromise(appointmentsService.getAllAppointments(params).then(function (response) {
                     $scope.appointments = response.data;
@@ -166,6 +167,15 @@ angular.module('bahmni.appointments')
                 scope.yes = undoCheckIn;
                 showPopUp(scope);
             };
+            $scope.getAppointmentsForDateNew = function (viewDate) {
+                $stateParams.viewDate = viewDate;
+                $scope.selectedAppointment = undefined;
+                var params = {forDate: viewDate};
+                spinner.forPromise(appointmentsService.getAllAppointments(params).then(function (response) {
+                    $scope.appointments = response.data;
+                    $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filterParams);
+                }));
+            };
 
             var changeStatus = function (toStatus, onDate, closeConfirmBox) {
                 var message = $translate.instant('APPOINTMENT_STATUS_CHANGE_SUCCESS_MESSAGE', {
@@ -176,8 +186,7 @@ angular.module('bahmni.appointments')
                     $scope.selectedAppointment.status = response.data.status;
                     closeConfirmBox();
                     messagingService.showMessage('info', message);
-                    $scope.getAppointmentsForDate($stateParams.viewDate);
-                    $scope.getAppointmentsForDate.selectedAppointment = undefined;
+                    $scope.getAppointmentsForDateNew($stateParams.viewDate);
                 });
             };
 
