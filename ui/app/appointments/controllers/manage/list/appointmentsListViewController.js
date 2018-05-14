@@ -38,11 +38,10 @@ angular.module('bahmni.appointments')
 
             $scope.getAppointmentsForDate = function (viewDate) {
                 $stateParams.viewDate = viewDate;
-                $scope.selectedAppointment = undefined;
                 var params = {forDate: viewDate};
                 spinner.forPromise(appointmentsService.getAllAppointments(params).then(function (response) {
                     $scope.appointments = response.data;
-                    $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filterParams);
+                    $scope.filteredAppointments = appointmentsFilter($scope.appointments, $stateParams.filtgetAppointmentsForDateerParams);
                 }));
             };
 
@@ -177,6 +176,8 @@ angular.module('bahmni.appointments')
                     $scope.selectedAppointment.status = response.data.status;
                     closeConfirmBox();
                     messagingService.showMessage('info', message);
+                    $scope.getAppointmentsForDate($stateParams.viewDate);
+                    $scope.getAppointmentsForDate.selectedAppointment = undefined;
                 });
             };
 
@@ -199,6 +200,7 @@ angular.module('bahmni.appointments')
             var showPopUp = function (popUpScope) {
                 popUpScope.no = function (closeConfirmBox) {
                     closeConfirmBox();
+                    console.log($stateParams.viewDate);
                 };
                 confirmBox({
                     scope: popUpScope,
